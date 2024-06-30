@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/Twinkle-Backend" />
+        <option name="gradleJvm" value="corretto-19" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/Twinkle-Backend" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="testRunner" value="PLATFORM" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/test-server" />
+        <option name="gradleJvm" value="corretto-19" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/test-server" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="testRunner" value="PLATFORM" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/utitle-config-server" />
+        <option name="gradleJvm" value="corretto-17" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/utitle-config-server" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/utitle-eureka" />
+        <option name="gradleJvm" value="corretto-19" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/utitle-eureka" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/utitle-gateway-service" />
+        <option name="gradleJvm" value="corretto-19" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/utitle-gateway-service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/utitleBackend" />
+        <option name="gradleJvm" value="corretto-19" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/utitleBackend" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
