@@ -1,93 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메인페이지</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/menu.css">
+    <link rel="stylesheet" type="text/css" href="/css/view.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
 </head>
-<scirpt src="/script/main.js"></scirpt>
 <body>
-<!--
-<form id="joinForm">
-    <p>회원가입</p>
-    <input type="text" id="username" placeholder="id"><br>
-    <input type="text" id="nickname" placeholder="nickname"><br>
-    <input type="password" id="password" placeholder="password"><br>
-    <input type="email" id="email" placeholder="email"><br>
-    <div onclick="joinPro()">전송</div>
-</form>
--->
-<br><br><br><br><br>
-<form id="loginForm">
-    <p>로그인</p>
-    <input type="text" id="username" placeholder="id" name="username"><br>
-    <input type="password" id="password" placeholder="password" name="password"><br>
-    <div onclick="loginPro()">로그인</div>
-</form>
+<header class="main-header">
+    <div class="header-bar">
+        <div onclick="location.href='/'">로고</div>
+        <div class="header-inout" onclick='location.href="/login"'>로그인</div>
+    </div>
+</header>
+<nav class="main-menu">
+    <ul class="menu-container">
+        <li>홈</li>
+        <li>중고거래</li>
+        <li>게시판</li>
+        <li>내정보</li>
+    </ul>
+</nav>
+<article class="main-view" id="main-view">
+    <div class="view-box">
+        홈화면 뷰
+    </div>
+</article>
+
+<footer class="main-footer">
+    <div>
+        푸터 뷰
+    </div>
+</footer>
 
 </body>
-<script>
-
-    function joinPro() {
-            // 폼 데이터를 가져오기
-            let formData = {
-                username: document.getElementById("username").value,
-                nickname: document.getElementById("nickname").value,
-                password: document.getElementById("password").value,
-                email: document.getElementById("email").value
-            };
-
-            // 서버로 데이터를 전송
-            fetch('http://localhost:8080/api/user/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                alert('회원가입이 완료되었습니다.');
-                // 여기에 원하는 리다이렉션 또는 다음 동작을 추가할 수 있습니다.
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('회원가입 중 오류가 발생했습니다.');
-            });
-        }
-
-function loginPro() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-
-    let formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-
-    fetch(`http://localhost:8080/login`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            alert('로그인 중 오류가 발생했습니다.');
-        }else{
-          let token = response.headers.get('Authorization');
-        if (token) {
-            localStorage.setItem('jwtToken', token);
-            console.log('JWT Token:', token);
-            alert('로그인이 완료되었습니다.');
-            location.href="/";
-        }else{
-            alert('로그인 중 오류가 발생했습니다.');
-        }
-        }
-        // JWT 토큰을 가져옴
-
-    });
-}
-
-
-
-</script>
 </html>
