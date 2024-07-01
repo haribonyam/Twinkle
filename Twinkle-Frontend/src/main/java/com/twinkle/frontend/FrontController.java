@@ -11,5 +11,16 @@ public class FrontController {
 
         return "main";
     }
+    @GetMapping("/login")
+    public String LoginPage(){
+
+        return "login";
+    }
+
+    @GetMapping("/join")
+    public String JoinPage(){
+
+        return "join";
+    }
 
 }

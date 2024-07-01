@@ -1,0 +1,20 @@
+.main-view{
+    width:80%;
+    margin:0 auto;
+    margin-top:15px;
+    border:1px solid black;
+    display: flex;
+    align-items: center;
+}
+
+.view-box{
+    width:inherit;
+    height:800px;
+}
+
+
+@media (max-width: 768px) {
+    .main-view{
+        width:100%;
+    }
+}

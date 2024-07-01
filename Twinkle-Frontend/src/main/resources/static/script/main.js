@@ -9,7 +9,7 @@ function joinPro() {
         };
 
         // 서버로 데이터를 전송
-        fetch('localhost:8080/api/user/save', {
+        fetch('http://localhost:8080/api/user/save', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -20,7 +20,7 @@ function joinPro() {
         .then(data => {
             console.log('Success:', data);
             alert('회원가입이 완료되었습니다.');
-            // 여기에 원하는 리다이렉션 또는 다음 동작을 추가할 수 있습니다.
+            location.href="/";
         })
         .catch((error) => {
             console.error('Error:', error);

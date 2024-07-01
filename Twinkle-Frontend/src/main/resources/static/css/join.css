@@ -1,0 +1,72 @@
+.main-join{
+    width:500px;
+    margin: 0 auto;
+    text-align: center;
+    padding :15px 0;
+}
+
+.join-container{
+    border : 1px solid black;
+    box-sizing: border-box;
+    width:inherit;
+    margin-bottom : 12px;
+    padding: 20px 0 ;
+
+}
+.join-container p{
+    font-size:20px;
+    font-weight: bold;
+}
+
+.join-container li{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    padding : 8px 0;
+    height:40px;
+}
+
+.join-container li div{
+    width:120px;
+}
+.join-container li input {
+    width :180px;
+    border-radius: 5px;
+}
+.join-container li span{
+    padding: 3px;
+    width:80px;
+    font-size:12px;
+    font-weight: bold;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+.join-check{
+    border:1px solid #ccc;
+    cursor: pointer;
+    margin-left:3px;
+}
+.join-check:hover{
+    background-color: #ccc;
+    opacity: 0.3;
+}
+
+.join-button{
+    margin: 0 auto;
+    border : 1px solid #ccc;
+    cursor: pointer;
+    line-height: 40px;
+    width:180px;
+    height:40px;
+    border-radius: 5px;
+}
+.join-button:hover{
+    background-color: #ccc;
+    opacity: 0.3;
+}
+
+@media (max-width: 600px) {
+    .main-join{
+        width:100%;
+    }
+}

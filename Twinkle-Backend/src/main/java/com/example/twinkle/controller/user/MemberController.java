@@ -29,4 +29,5 @@ public class MemberController {
         return ResponseEntity.created(uri).body(memberService.joinUser(memberRequestDto));
     }
 
+
 }
