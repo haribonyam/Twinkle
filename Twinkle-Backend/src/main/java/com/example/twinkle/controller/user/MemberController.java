@@ -4,11 +4,9 @@ package com.example.twinkle.controller.user;
 import com.example.twinkle.dto.request.MemberRequestDto;
 import com.example.twinkle.service.user.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -29,5 +27,37 @@ public class MemberController {
         return ResponseEntity.created(uri).body(memberService.joinUser(memberRequestDto));
     }
 
+    /**
+     * 회원가입 아이디 중복확인
+     */
+    @GetMapping("/user/check/username")
+    public ResponseEntity<?> checkUserId(@RequestParam String username){
+
+        HttpStatus status = memberService.duplicatedUsername(username);
+
+        return new ResponseEntity<>(status);
+    }
+
+    /**
+     * 회원가입 닉네임 중복확인
+     */
+    @GetMapping("/user/check/nickname")
+    public ResponseEntity<?> checkUserNickname(@RequestParam String nickname){
+
+        HttpStatus status = memberService.duplicatedNickname(nickname);
+
+        return new ResponseEntity<>(status);
+    }
+
+    /**
+     * 회원가입 이메일 중복확인
+     */
+    @GetMapping("/user/check/email")
+    public ResponseEntity<?> checkUserEmail(@RequestParam String email){
+
+        HttpStatus status = memberService.duplicatedEmail(email);
+
+        return new ResponseEntity<>(status);
+    }
 
 }

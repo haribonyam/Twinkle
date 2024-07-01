@@ -8,11 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 public class ExceptionResponseHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleUnexpectedException(Exception e) {
+        return ResponseEntity.internalServerError().body(ApiResponse.error(e.getMessage(), "002"));
+    }
+
+    @ExceptionHandler({IllegalAccessException.class, NoSuchElementException.class})
+    public ResponseEntity<ApiResponse> handleCommonException(Exception e) {
         return ResponseEntity.internalServerError().body(ApiResponse.error(e.getMessage(), "002"));
     }
 
