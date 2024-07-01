@@ -22,4 +22,12 @@ public enum ErrorCode {
     public static CustomException throwUserDuplicatedId() {
         throw new CustomException(USER_DUPLICATED_ID);
     }
+
+    public static CustomException throwUserDuplicatedNickname(){
+        throw new CustomException(USER_DUPLICATED_NICKNAME);
+    }
+
+    public static CustomException throwUserDuplicatedEmail(){
+        throw new CustomException(USER_DUPLICATED_EMAIL);
+    }
 }

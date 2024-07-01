@@ -28,4 +28,34 @@ function joinPro() {
         });
     }
 
+  function joinCheck(type){
+     const baseUri = "http://localhost:8080/api/user/check/" + type;
+     const param = document.getElementById(type).value;
+     const params = new URLSearchParams();
+     params.append(type,param);
 
+     var messages={
+        username:"아이디",
+        nickname:"닉네임",
+        email:"이메일"
+     };
+     var message = messages[type];
+
+     if(param==""){
+        alert(message +"를 입력해 주세요.");
+        return;
+     }
+
+         fetch(`${baseUri}?${params.toString()}`)
+         .then(response=>{
+             if(response.ok){
+                 alert("사용 가능한 "+message+" 입니다.");
+             }else{
+                 alert("중복된 "+message+" 입니다.");
+             }
+         })
+         .catch(error=>{
+             alert(message+" 중복확인 도중 오류가 발생하였습니다.");
+         });
+
+     }
