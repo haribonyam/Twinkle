@@ -27,6 +27,10 @@ public class CustomUserDetails implements UserDetails {
     }
     public String getRole(){return role;}
 
+    public String getNickname(){
+        return memberEntity.getNickname();
+    }
+
     @Override
     public String getPassword() {
         return memberEntity.getPassword();

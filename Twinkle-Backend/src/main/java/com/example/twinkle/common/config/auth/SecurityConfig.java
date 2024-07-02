@@ -14,6 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collections;
 
@@ -40,6 +42,7 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
             //CORS 나중에 cloud gateway에서 처리
+            /*
             http
                     .cors((cors)-> cors
                             .configurationSource(new CorsConfigurationSource() {
@@ -53,10 +56,13 @@ public class SecurityConfig {
                                     configuration.setMaxAge(3600L);
 
                                     configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                                    configuration.setExposedHeaders(Collections.singletonList("Nickname"));
                                     return configuration;
                                 }
                             }));
 
+
+             */
             http
                     .csrf((auth) -> auth.disable());
 
@@ -85,6 +91,23 @@ public class SecurityConfig {
 
             return http.build();
         }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("*")
+                        .allowedHeaders("*")
+                        .exposedHeaders("Authorization", "Nickname") // 여기서 모든 노출할 헤더들을 한 번에 설정
+                        .allowCredentials(true)
+                        .maxAge(3600);
+            }
+        };
+    }
+
     }
 
 

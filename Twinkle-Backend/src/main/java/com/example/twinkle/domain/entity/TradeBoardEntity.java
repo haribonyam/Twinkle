@@ -4,15 +4,16 @@ package com.example.twinkle.domain.entity;
 import com.example.twinkle.domain.entity.status.Condition;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="tradeboard")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="tradeboard")
 public class TradeBoardEntity {
 
     @Id
