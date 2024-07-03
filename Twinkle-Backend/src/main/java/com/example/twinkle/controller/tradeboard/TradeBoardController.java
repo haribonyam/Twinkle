@@ -22,8 +22,8 @@ public class TradeBoardController {
      * 중고거래 게시판 글 작성
      * */
     @PostMapping("/tradeboard/save")
-    public ResponseEntity<Long> TradeBoardPostSave(@RequestBody TradeBoardRequestDto tradeBoardRequestDto){
-        Long id = tradeBoardService.saveTradeBoardPost(tradeBoardRequestDto);
+    public ResponseEntity<Long> TradeBoardPostSave(@RequestPart TradeBoardRequestDto tradeBoardRequestDto,@RequestParam("files") List<MultipartFile> files){
+        Long id = tradeBoardService.saveTradeBoardPost(tradeBoardRequestDto,files);
         return ResponseEntity.ok().body(id);
     }
 

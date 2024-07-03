@@ -4,13 +4,18 @@ package com.example.twinkle.domain.entity;
 import com.example.twinkle.domain.entity.status.Condition;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
+@DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="tradeboard")
@@ -35,6 +40,9 @@ public class TradeBoardEntity {
     private Integer view;
 
     private Integer price;
+
+    @OneToMany(mappedBy = "tradeBoard")
+    private List<FileEntity> files = new ArrayList<FileEntity>();
 
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     private LocalDateTime createdDate;
@@ -64,11 +72,14 @@ public class TradeBoardEntity {
         this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
     }
-    @PreUpdate
+
     public void updatedDate(){
+
         this.updatedDate = LocalDateTime.now();
     }
+
     public void viewCountUp(){
+
         this.view++;
     }
 }

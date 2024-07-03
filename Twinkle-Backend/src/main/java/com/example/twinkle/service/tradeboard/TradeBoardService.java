@@ -11,6 +11,9 @@ import com.example.twinkle.repository.tradeboard.TradeBoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +21,12 @@ public class TradeBoardService {
 
     private final TradeBoardRepository tradeBoardRepository;
     private final MemberRepository memberRepository;
-
+    private final FileService fileSerivce;
     /**
      * 중고거래 게시물 저장
      */
     @Transactional
-    public Long saveTradeBoardPost(TradeBoardRequestDto tradeBoardRequestDto) {
+    public Long saveTradeBoardPost(TradeBoardRequestDto tradeBoardRequestDto, List<MultipartFile> files) {
 
         MemberEntity member = memberRepository.findByNickname(tradeBoardRequestDto.getNickname())
                 .orElseThrow(ErrorCode::throwMeberNotFound);
@@ -35,6 +38,10 @@ public class TradeBoardService {
 
         Long id = tradeBoardRepository.save(tradeBoardEntity).getId();
 
+        if(!files.isEmpty()){
+            fileSerivce.saveFile(files,tradeBoardEntity);
+        }
+
         return id;
     }
 
@@ -42,9 +49,10 @@ public class TradeBoardService {
       중고거래 게시물 단건 조회
      * @param id
      */
+    @Transactional
     public TradeBoardResponseDto findById(Long id) {
         TradeBoardEntity tradeBoardEntity = tradeBoardRepository.findById(id).orElseThrow(ErrorCode::throwPostNotFound);
-
+        tradeBoardEntity.viewCountUp();
         return TradeBoardResponseDto.toDto(tradeBoardEntity);
     }
 }
