@@ -1,21 +1,25 @@
 package com.example.twinkle.common.config.auth;
 
 
+import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.dto.CustomUserDetails;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 //나중에 gateway global 이동
-
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -33,29 +37,33 @@ public class JwtFilter extends OncePerRequestFilter {
         //Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            System.out.println("token null");
+            log.info("Token is null !!");
             filterChain.doFilter(request, response);
 
             //조건이 해당되면 메소드 종료 (필수)
             return;
         }
 
-        System.out.println("authorization now");
+        log.info("Authorization now");
         //Bearer 부분 제거 후 순수 토큰만 획득
-        String token = authorization.split(" ")[1];
-        System.out.println(token);
+        String access = authorization.split(" ")[1];
+
         //토큰 소멸 시간 검증
-        if (jwtUtil.isExpired(token)) {
 
-            System.out.println("token expired");
-            filterChain.doFilter(request, response);
+        try {
+            jwtUtil.isExpired(access);
+        } catch (ExpiredJwtException e) {
 
-            //조건이 해당되면 메소드 종료 (필수)
+            log.info("Token is expired");
+            response.getWriter().print("access token is expired");
+            //토큰 만료시 401 return
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
+
 
         //토큰에서 username ,role 획득
-        String username = jwtUtil.getUserName(token);
+        String username = jwtUtil.getUserName(access);
         String role = username.equals("ADMIN")?"ADMIN":"USER";
 
 

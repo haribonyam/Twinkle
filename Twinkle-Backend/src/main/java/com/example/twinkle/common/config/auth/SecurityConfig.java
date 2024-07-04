@@ -1,5 +1,6 @@
 package com.example.twinkle.common.config.auth;
 
+import com.example.twinkle.service.user.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
         private final AuthenticationConfiguration authenticationConfiguration;
         private final JwtUtil jwtUtil;
+        private final RefreshTokenService refreshTokenService;
 
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
@@ -83,7 +85,7 @@ public class SecurityConfig {
                     .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
 
             http
-                    .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                    .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,refreshTokenService), UsernamePasswordAuthenticationFilter.class);
 
             http
                     .sessionManagement((session) -> session
