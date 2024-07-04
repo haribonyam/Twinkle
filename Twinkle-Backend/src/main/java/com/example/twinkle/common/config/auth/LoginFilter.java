@@ -2,6 +2,7 @@ package com.example.twinkle.common.config.auth;
 
 
 import com.example.twinkle.dto.CustomUserDetails;
+import com.example.twinkle.service.user.RefreshTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -46,9 +48,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-        String token = jwtUtil.createJwt(username,6000*600*10L);
+        String access = jwtUtil.createJwt(username);
+        String refresh = jwtUtil.createRefreshToken(username);
 
-        response.addHeader("Authorization","Bearer "+token);
+        refreshTokenService.saveToken(access,refresh,username);
+
+        response.addHeader("Authorization","Bearer "+access);
         response.addHeader("Nickname",nickname);
 
     }

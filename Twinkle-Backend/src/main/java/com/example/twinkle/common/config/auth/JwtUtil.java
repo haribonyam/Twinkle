@@ -28,16 +28,27 @@ public class JwtUtil {
     }
 
     public boolean isExpired(String token){
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
 
     }
-    public String createJwt(String username,Long expiredMs){
+    public String createJwt(String username){
 
         return Jwts.builder()
                 .claim("username",username)
                 .claim("role","USER")
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+expiredMs))
+                .expiration(new Date(System.currentTimeMillis()+30*60*1000L))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(String username){
+
+        return Jwts.builder()
+                .claim("username",username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis()+14*24*60*60*1000L))
                 .signWith(secretKey)
                 .compact();
     }
