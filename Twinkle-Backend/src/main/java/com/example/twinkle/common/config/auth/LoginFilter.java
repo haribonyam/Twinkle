@@ -24,9 +24,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
         String username = obtainUsername(request);
         String password = obtainPassword(request);
-        System.out.println(username);
+
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username,password, null);
 
@@ -36,16 +37,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, Authentication authentication){
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
         String username = customUserDetails.getUsername();
+        String nickname = customUserDetails.getNickname();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-
         String token = jwtUtil.createJwt(username,6000*600*10L);
+
         response.addHeader("Authorization","Bearer "+token);
+        response.addHeader("Nickname",nickname);
 
     }
 

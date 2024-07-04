@@ -43,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("authorization now");
         //Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
-
+        System.out.println(token);
         //토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
 
@@ -60,9 +60,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         //userEntity를 생성하여 값 set
-        MemberEntity memberEntity = new MemberEntity();
-
-        memberEntity.builder().password("temppassword")
+        MemberEntity memberEntity = MemberEntity.builder()
+                .password("temppassword")
                 .username(username)
                 .build();
 
