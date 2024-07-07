@@ -82,7 +82,7 @@ public class SecurityConfig {
             //JWTFilter 등록
 
             http
-                    .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+                    .addFilterBefore(new JwtFilter(jwtUtil,refreshTokenService), LoginFilter.class);
 
             http
                     .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,refreshTokenService), UsernamePasswordAuthenticationFilter.class);
