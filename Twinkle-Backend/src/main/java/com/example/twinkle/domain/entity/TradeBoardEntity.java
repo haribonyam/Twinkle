@@ -2,6 +2,7 @@ package com.example.twinkle.domain.entity;
 
 
 import com.example.twinkle.domain.entity.status.Condition;
+import com.example.twinkle.dto.request.TradeBoardRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -41,7 +42,7 @@ public class TradeBoardEntity {
 
     private Integer price;
 
-    @OneToMany(mappedBy = "tradeBoard")
+    @OneToMany(mappedBy = "tradeBoard", cascade = CascadeType.REMOVE)
     private List<FileEntity> files = new ArrayList<FileEntity>();
 
     @DateTimeFormat(pattern = "yyyy-mm-dd")
@@ -66,7 +67,10 @@ public class TradeBoardEntity {
         this.condition = Condition.판매중;
         this.view = 0;
     }
-
+    public void addFiles(FileEntity file){
+        this.files.add(file);
+        file.addTradeBoard(this);
+    }
     @PrePersist
     public void CreatedDate(){
         this.createdDate = LocalDateTime.now();
@@ -76,6 +80,12 @@ public class TradeBoardEntity {
     public void updatedDate(){
 
         this.updatedDate = LocalDateTime.now();
+    }
+
+    public void updatePost(String title, String content, Integer price){
+        this.title = title;
+        this.content = content;
+        this.price = price;
     }
 
     public void viewCountUp(){
