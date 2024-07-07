@@ -1,13 +1,11 @@
 package com.example.twinkle.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "files")
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FileEntity {
@@ -27,6 +25,10 @@ public class FileEntity {
         this.path = path;
         this.name = name;
         this.tradeBoard = tradeBoardEntity;
+    }
+
+    public void addTradeBoard(TradeBoardEntity tradeBoardEntity){
+        this.tradeBoard =tradeBoardEntity;
     }
 
 }
