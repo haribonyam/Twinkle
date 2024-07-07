@@ -4,6 +4,7 @@ package com.example.twinkle.common.config.auth;
 import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.dto.CustomUserDetails;
+import com.example.twinkle.service.user.RefreshTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -23,9 +25,11 @@ import java.io.PrintWriter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
+    public JwtFilter(JwtUtil jwtUtil,RefreshTokenService refreshTokenService){
 
-    public JwtFilter(JwtUtil jwtUtil){
         this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -49,16 +53,22 @@ public class JwtFilter extends OncePerRequestFilter {
         String access = authorization.split(" ")[1];
 
         //토큰 소멸 시간 검증
-
+        //토큰 만료시 refresh 토큰을 이용해 새로운 토큰 발급
+        //리팩토링 필요
         try {
             jwtUtil.isExpired(access);
         } catch (ExpiredJwtException e) {
 
             log.info("Token is expired");
-            response.getWriter().print("access token is expired");
-            //토큰 만료시 401 return
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            String newToken = republishingToken(access);
+            if(StringUtils.hasText(newToken)){
+                access = newToken;
+            }else {
+                response.getWriter().print("access token is expired");
+                //모든 토큰 만료시 401 return
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
         }
 
 
@@ -84,4 +94,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    public String republishingToken(String access){
+
+        return refreshTokenService.republishAccessToken(access);
+    }
+
 }

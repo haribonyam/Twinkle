@@ -1,10 +1,7 @@
 package com.example.twinkle.domain.redis;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 /***
  * 현재는 mysql에 저장하고 후에 redis에 저장
@@ -13,6 +10,7 @@ import lombok.Getter;
 @Table(name="refresh")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RefreshToken {
 
     @Id
