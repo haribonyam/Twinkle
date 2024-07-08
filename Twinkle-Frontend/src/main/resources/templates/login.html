@@ -53,8 +53,10 @@
                 alert('로그인 중 오류가 발생했습니다.');
             }else{
               let token = response.headers.get('Authorization');
+              let nickname = response.headers.get('Nickname');
             if (token) {
                 localStorage.setItem('jwtToken', token);
+                localStorage.setItem('nickname', nickname);
                 console.log('JWT Token:', token);
                 alert('로그인이 완료되었습니다.');
                 location.href="/";
