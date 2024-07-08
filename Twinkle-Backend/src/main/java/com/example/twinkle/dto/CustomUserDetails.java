@@ -27,6 +27,8 @@ public class CustomUserDetails implements UserDetails {
     }
     public String getRole(){return role;}
 
+    public Long getId(){ return memberEntity.getId(); }
+
     public String getNickname(){
         return memberEntity.getNickname();
     }

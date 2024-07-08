@@ -7,16 +7,19 @@ import com.example.twinkle.domain.entity.FileEntity;
 import com.example.twinkle.domain.entity.TradeBoardEntity;
 import com.example.twinkle.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileService {
     private final FileRepository fileRepository;
 
@@ -40,7 +43,12 @@ public class FileService {
     public FileEntity setFile(MultipartFile file, TradeBoardEntity tradeBoard){
         String fileName = FileUtil.getCreateRandomName();
         String path = FileUtil.getFilePath(file,fileName);
-
+        File saveFile = new File(System.getProperty("user.dir"),fileName);
+       try {
+           file.transferTo(saveFile);
+       }catch(IOException e){
+           log.info("file Exception");
+       }
         return FileEntity.builder()
                 .name(fileName)
                 .path(path)

@@ -18,12 +18,13 @@ public class TokenController {
     public void logout(@RequestHeader("Authorization") final String access){
         refreshTokenService.deleteRefreshToken(access);
     }
-    @PostMapping("/user/token/refresh")
+    @PostMapping("/token/refresh")
     public ResponseEntity<TokenResponseDto> refreshToken(@RequestHeader("Authorization") final String access){
-        String accessToken = refreshTokenService.republishAccessToken(access);
+        System.out.println(access.split("Bearer ")[1]);
+        String accessToken = refreshTokenService.republishAccessToken(access.split("Bearer ")[1]);
         if(accessToken != null){
 
-            return ResponseEntity.ok(new TokenResponseDto(accessToken));
+            return ResponseEntity.ok(new TokenResponseDto("Bearer "+accessToken));
         }
         return ResponseEntity.badRequest().body(new TokenResponseDto(null));
     }

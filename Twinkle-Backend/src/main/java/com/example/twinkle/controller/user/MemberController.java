@@ -2,6 +2,7 @@ package com.example.twinkle.controller.user;
 
 
 import com.example.twinkle.dto.request.MemberRequestDto;
+import com.example.twinkle.dto.response.MemberResponseDto;
 import com.example.twinkle.service.user.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,17 @@ public class MemberController {
         HttpStatus status = memberService.duplicatedEmail(email);
 
         return new ResponseEntity<>(status);
+    }
+
+    /***
+     * 로그인한 회원 정보 닉네임으로 조회
+     * @param nickname
+     * @return
+     */
+    @GetMapping("/user/{nickname}")
+    public ResponseEntity<MemberResponseDto> findByNickname(@PathVariable String nickname){
+
+        return ResponseEntity.ok(memberService.findByNickname(nickname));
     }
 
 }

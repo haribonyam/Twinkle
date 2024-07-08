@@ -4,6 +4,7 @@ package com.example.twinkle.service.user;
 import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.dto.request.MemberRequestDto;
+import com.example.twinkle.dto.response.MemberResponseDto;
 import com.example.twinkle.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -56,5 +59,10 @@ public class MemberService {
         }else{
             throw ErrorCode.throwUserDuplicatedEmail();
         }
+    }
+
+    public MemberResponseDto findByNickname(String nickname) {
+        MemberEntity member = memberRepository.findByNickname(nickname).orElseThrow(ErrorCode::throwMeberNotFound);
+        return new MemberResponseDto(member);
     }
 }

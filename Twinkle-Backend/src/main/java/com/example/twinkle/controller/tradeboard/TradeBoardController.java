@@ -38,7 +38,7 @@ public class TradeBoardController {
      * 중고거래 게시물 id로 단건 삭제
      * @param id
      */
-    @DeleteMapping("/tradeboard/delete/{id}")
+    @DeleteMapping("/tradeboard/{id}")
     public ResponseEntity<? > deletePost(@PathVariable Long id){
         tradeBoardService.deletePost(id);
         return ResponseEntity.noContent().build();
@@ -49,7 +49,7 @@ public class TradeBoardController {
      * @param id
      * @param tradeBoardRequestDto
      */
-    @PutMapping("/tradeboard/update/{id}")
+    @PutMapping("/tradeboard/{id}")
     public ResponseEntity<? > updatePost(@PathVariable Long id, @RequestBody TradeBoardRequestDto tradeBoardRequestDto){
 
         tradeBoardService.updatePost(id, tradeBoardRequestDto);
@@ -62,7 +62,8 @@ public class TradeBoardController {
      */
     @GetMapping("/tradeboard/list")
     public ResponseEntity<Page<TradeBoardResponseDto>> TradeBoardAll(
-            @PageableDefault(size=12, sort="id", direction=Sort.Direction.DESC)Pageable pageable,@RequestBody Map<String,String> searchCondition){
+            @PageableDefault(size=12, sort="id", direction=Sort.Direction.DESC)Pageable pageable,
+            @RequestParam(required = false, defaultValue = "") Map<String,String> searchCondition){
 
         Page<TradeBoardResponseDto> tradeBoardResponseDtos = tradeBoardService.tradeBoardAllList(pageable,searchCondition);
 

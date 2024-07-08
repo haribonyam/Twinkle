@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -59,6 +60,7 @@ public class SecurityConfig {
 
                                     configuration.setExposedHeaders(Collections.singletonList("Authorization"));
                                     configuration.setExposedHeaders(Collections.singletonList("Nickname"));
+                                    configuration.setExposedHeaders(Collections.singletonList("Id"));
                                     return configuration;
                                 }
                             }));
@@ -77,12 +79,12 @@ public class SecurityConfig {
             http
                     .authorizeHttpRequests((auth) -> auth
                             .requestMatchers("/login", "/", "/api/user/save","/api/user/check/**").permitAll()
+                            .requestMatchers("/token/**").permitAll()
                             .anyRequest().authenticated());
-
             //JWTFilter 등록
 
             http
-                    .addFilterBefore(new JwtFilter(jwtUtil,refreshTokenService), LoginFilter.class);
+                    .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
 
             http
                     .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,refreshTokenService), UsernamePasswordAuthenticationFilter.class);
@@ -103,10 +105,18 @@ public class SecurityConfig {
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .exposedHeaders("Authorization", "Nickname") // 여기서 모든 노출할 헤더들을 한 번에 설정
+                        .exposedHeaders("Authorization", "Nickname","Id") // 여기서 모든 노출할 헤더들을 한 번에 설정
                         .allowCredentials(true)
                         .maxAge(3600);
             }
+        };
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> {
+            web.ignoring()
+                    .requestMatchers("/token/refresh");
         };
     }
 

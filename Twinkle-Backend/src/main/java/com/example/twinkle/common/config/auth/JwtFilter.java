@@ -25,11 +25,9 @@ import java.io.PrintWriter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
-    public JwtFilter(JwtUtil jwtUtil,RefreshTokenService refreshTokenService){
+    public JwtFilter(JwtUtil jwtUtil){
 
         this.jwtUtil = jwtUtil;
-        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -53,23 +51,21 @@ public class JwtFilter extends OncePerRequestFilter {
         String access = authorization.split(" ")[1];
 
         //토큰 소멸 시간 검증
-        //토큰 만료시 refresh 토큰을 이용해 새로운 토큰 발급
         //리팩토링 필요
+
         try {
             jwtUtil.isExpired(access);
         } catch (ExpiredJwtException e) {
 
-            log.info("Token is expired");
-            String newToken = republishingToken(access);
-            if(StringUtils.hasText(newToken)){
-                access = newToken;
-            }else {
-                response.getWriter().print("access token is expired");
-                //모든 토큰 만료시 401 return
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+            //response body
+            PrintWriter writer = response.getWriter();
+            writer.print("access token expired");
+
+            //response status code
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
+
 
 
         //토큰에서 username ,role 획득
@@ -95,9 +91,5 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    public String republishingToken(String access){
-
-        return refreshTokenService.republishAccessToken(access);
-    }
 
 }

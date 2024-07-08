@@ -43,8 +43,6 @@ public class RefreshTokenService {
 
             refreshToken.updateAccessToken(newAccessToken);
 
-            refreshTokenRepository.save(refreshToken);
-
             log.info("access token is expired & new token is published");
             return newAccessToken;
         }
