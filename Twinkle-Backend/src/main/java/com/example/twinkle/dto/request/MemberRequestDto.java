@@ -2,15 +2,11 @@ package com.example.twinkle.dto.request;
 
 
 import com.example.twinkle.domain.entity.MemberEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.twinkle.domain.entity.status.SocialLogin;
+import lombok.*;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@RequiredArgsConstructor
 public class MemberRequestDto {
 
     private String username;
@@ -18,12 +14,13 @@ public class MemberRequestDto {
     private String password;
     private String email;
 
-    public MemberEntity toEntity(){
+    public MemberEntity toEntity(SocialLogin socialLogin){
         return MemberEntity.builder()
                 .nickname(this.nickname)
                 .email(this.email)
                 .password(this.password)
                 .username(this.username)
+                .socialLogin(socialLogin)
                 .build();
     }
 

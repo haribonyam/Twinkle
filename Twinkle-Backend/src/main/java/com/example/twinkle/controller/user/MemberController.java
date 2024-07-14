@@ -5,6 +5,7 @@ import com.example.twinkle.dto.request.MemberRequestDto;
 import com.example.twinkle.dto.response.MemberResponseDto;
 import com.example.twinkle.service.user.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
         private final MemberService memberService;
 
@@ -68,7 +70,7 @@ public class MemberController {
      */
     @GetMapping("/user/{nickname}")
     public ResponseEntity<MemberResponseDto> findByNickname(@PathVariable String nickname){
-
+        log.info("approaching my info {}",nickname);
         return ResponseEntity.ok(memberService.findByNickname(nickname));
     }
 

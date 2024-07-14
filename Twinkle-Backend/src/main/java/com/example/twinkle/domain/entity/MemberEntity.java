@@ -1,6 +1,7 @@
 package com.example.twinkle.domain.entity;
 
 
+import com.example.twinkle.domain.entity.status.SocialLogin;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,13 +23,19 @@ public class MemberEntity {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private SocialLogin socialLogin;
+
     @Builder
-    public MemberEntity(Long id,String username,String nickname,String email,String password){
+    public MemberEntity(Long id,String username,String nickname,String email,String password,
+                        SocialLogin socialLogin){
         this.id=id;
         this.username=username;
         this.nickname=nickname;
         this.email=email;
         this.password=password;
+        this.socialLogin=socialLogin;
     }
+
 
 }

@@ -70,7 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         //토큰에서 username ,role 획득
         String username = jwtUtil.getUserName(access);
-        String role = username.equals("ADMIN")?"ADMIN":"USER";
+        String role = username.equals("ADMIN")?"ROLE_ADMIN":"ROLE_USER";
 
 
         //userEntity를 생성하여 값 set
