@@ -7,5 +7,4 @@ import lombok.*;
 public class TokenResponseDto {
     private String accessToken;
 
-
 }

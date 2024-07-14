@@ -35,17 +35,23 @@ public class RefreshTokenService {
     @Transactional
     public String republishAccessToken(String access){
 
+        log.info("jwt token refresh ing");
         Optional<RefreshToken> refresh = refreshTokenRepository.findByAccessToken(access);
 
         if(refresh.isPresent() && !jwtUtil.isExpired(refresh.get().getRefreshToken())){
+
             RefreshToken refreshToken = refresh.get();
-            String newAccessToken = jwtUtil.createJwt(refreshToken.getUsername());
+
+            String role = refreshToken.getUsername().equals("ADMIN")?"ROLE_ADMIN":"ROLE_USER";
+
+            String newAccessToken = jwtUtil.createJwt(refreshToken.getUsername(),role);
 
             refreshToken.updateAccessToken(newAccessToken);
 
             log.info("access token is expired & new token is published");
             return newAccessToken;
         }
+        log.info("jwt refresh fail...");
         return null;
     }
 

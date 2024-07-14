@@ -23,4 +23,9 @@ public class FrontController {
         return "join";
     }
 
+    @GetMapping("/social")
+    public String SocialLoginPage(){
+        return "socialLogin";
+    }
+
 }

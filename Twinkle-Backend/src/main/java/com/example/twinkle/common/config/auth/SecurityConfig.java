@@ -1,17 +1,22 @@
 package com.example.twinkle.common.config.auth;
 
+import com.example.twinkle.service.socialLogin.SocialLoginService;
+import com.example.twinkle.service.socialLogin.SocialLoginSuccessHandler;
 import com.example.twinkle.service.user.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,6 +34,8 @@ public class SecurityConfig {
         private final AuthenticationConfiguration authenticationConfiguration;
         private final JwtUtil jwtUtil;
         private final RefreshTokenService refreshTokenService;
+        private final DefaultOAuth2UserService socialLoginService;
+        private final SocialLoginSuccessHandler socialLoginSuccessHandler;
 
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
@@ -36,14 +43,29 @@ public class SecurityConfig {
             return configuration.getAuthenticationManager();
         }
 
-        @Bean
-        public BCryptPasswordEncoder bCryptPasswordEncoder(){
-
-            return new BCryptPasswordEncoder();
-        }
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+            http
+                    .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+
+                        @Override
+                        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+
+                            CorsConfiguration configuration = new CorsConfiguration();
+
+                            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                            configuration.setAllowedMethods(Collections.singletonList("*"));
+                            configuration.setAllowCredentials(true);
+                            configuration.setAllowedHeaders(Collections.singletonList("*"));
+                            configuration.setMaxAge(3600L);
+
+                            configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                            configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                            return configuration;
+                        }
+                    }));
             //CORS 나중에 cloud gateway에서 처리
             /*
             http
@@ -67,6 +89,8 @@ public class SecurityConfig {
 
 
              */
+
+
             http
                     .csrf((auth) -> auth.disable());
 
@@ -78,10 +102,19 @@ public class SecurityConfig {
 
             http
                     .authorizeHttpRequests((auth) -> auth
-                            .requestMatchers("/login", "/", "/api/user/save","/api/user/check/**").permitAll()
+                            .requestMatchers("/oauth2/**","/social").permitAll()
+                            .requestMatchers( "/","/login","/api/user/save","/api/user/check/**").permitAll()
                             .requestMatchers("/token/**").permitAll()
                             .anyRequest().authenticated());
             //JWTFilter 등록
+            http
+                    .oauth2Login((oauth2) -> oauth2
+                            .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/code/*"))
+                            .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                    .userService(socialLoginService))
+                            .successHandler(socialLoginSuccessHandler)
+                    );
+
 
             http
                     .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
@@ -92,6 +125,7 @@ public class SecurityConfig {
             http
                     .sessionManagement((session) -> session
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 
             return http.build();
         }
@@ -116,7 +150,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
             web.ignoring()
-                    .requestMatchers("/token/refresh");
+                    .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
         };
     }
 

@@ -59,3 +59,19 @@ function joinPro() {
          });
 
      }
+
+
+   function checkLoginStatus() {
+           const loginButton = document.getElementById('loginButton');
+           const nickname = localStorage.getItem('nickname');
+
+           if (nickname) {
+               // 로그인된 경우
+               loginButton.textContent = '로그아웃';
+               loginButton.setAttribute('onclick', 'logoutPro()');
+           } else {
+               // 로그인되지 않은 경우
+               loginButton.textContent = '로그인';
+               loginButton.setAttribute('onclick', 'location.href="/login"');
+           }
+       }

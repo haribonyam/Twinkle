@@ -9,25 +9,25 @@
     <link rel="stylesheet" type="text/css" href="/css/menu.css">
     <link rel="stylesheet" type="text/css" href="/css/view.css">
     <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="/css/tradeboard.css">
 </head>
 <body>
 <header class="main-header">
     <div class="header-bar">
         <div onclick="location.href='/'">로고</div>
-        <div class="header-inout" onclick='location.href="/login"'>로그인</div>
+        <div id="loginButton" class="header-inout" onclick='location.href="/login"'>로그인</div>
     </div>
 </header>
 <nav class="main-menu">
     <ul class="menu-container">
-        <li>홈</li>
-        <li>중고거래</li>
+        <li onclick="location.href='/'">홈</li>
+        <li onclick="tradeBoardList()">중고거래</li>
         <li>게시판</li>
-        <li>내정보</li>
+        <li onclick="my()">내정보</li>
     </ul>
 </nav>
 <article class="main-view" id="main-view">
     <div class="view-box">
-        홈화면 뷰
     </div>
 </article>
 
@@ -38,4 +38,210 @@
 </footer>
 
 </body>
+<script>
+    window.onload = function() {
+           // 로그인 상태 확인
+           checkLoginStatus();
+       };
+
+       // 로그인 상태 확인 및 UI 업데이트
+       function checkLoginStatus() {
+           const loginButton = document.getElementById('loginButton');
+           const nickname = localStorage.getItem('nickname');
+
+           if (nickname) {
+               // 로그인된 경우
+               loginButton.textContent = '로그아웃';
+               loginButton.setAttribute('onclick', 'logoutPro()');
+           } else {
+               // 로그인되지 않은 경우
+               loginButton.textContent = '로그인';
+               loginButton.setAttribute('onclick', 'location.href="/login"');
+           }
+       }
+
+/*
+       function tradeBoard() {
+               fetch('http://localhost:8080/api/tradeboard/list', {
+                   method: 'GET',
+                   headers: {
+                       'Authorization': localStorage.getItem('jwtToken'),
+                       'Content-Type': 'application/json'
+                   }
+               })
+               .then(response => response.json())
+               .then(data => {
+                   console.log('Success:', data);
+                   makeTradeBoard(data);
+               })
+               .catch((error) => {
+                   console.error('Error:', error);
+                   alert('error');
+               });
+           }
+
+           function makeTradeBoard(data) {
+               const viewBox = document.querySelector('.view-box');
+
+               // Clear existing content
+               viewBox.innerHTML = '';
+
+               // Create tradeboard-bar
+               const tradeboardBar = document.createElement('div');
+               tradeboardBar.className = 'tradeboard-bar';
+
+               const categoryDiv = document.createElement('div');
+               ['전체', '화장품', '향수', '미용기기'].forEach(category => {
+                   const span = document.createElement('span');
+                   span.textContent = category;
+                   categoryDiv.appendChild(span);
+               });
+               tradeboardBar.appendChild(categoryDiv);
+
+               const writeDiv = document.createElement('div');
+               writeDiv.textContent = '글쓰기';
+               writeDiv.setAttribute('onclick', 'tradeBoardWrite()');
+               tradeboardBar.appendChild(writeDiv);
+
+               viewBox.appendChild(tradeboardBar);
+
+               // Create tradeboard-item
+               const tradeboardItem = document.createElement('ul');
+               tradeboardItem.className = 'tradeboard-item';
+
+               data.content.forEach(item => {
+                   const listItem = document.createElement('li');
+                   listItem.setAttribute('onclick', `itemInfo(${item.id})`);
+
+                   const photoDiv = document.createElement('div');
+                   photoDiv.className = 'tradeboard-photo';
+
+                   // Check if images array is not empty and the first image is not null
+                   const imgSrc = (item.paths.length > 0 && item.paths[0]) ? item.paths[0] : 'default.jpg';
+
+                   const img = document.createElement('img');
+                   img.src = imgSrc;
+                   photoDiv.appendChild(img);
+
+                   const priceDiv = document.createElement('div');
+                   priceDiv.className = 'tradeboard-price';
+                   priceDiv.textContent = item.price;
+
+                   const titleDiv = document.createElement('div');
+                   titleDiv.className = 'tradeboard-title';
+                   titleDiv.textContent = item.title;
+
+                   listItem.appendChild(photoDiv);
+                   listItem.appendChild(priceDiv);
+                   listItem.appendChild(titleDiv);
+
+                   tradeboardItem.appendChild(listItem);
+               });
+
+               viewBox.appendChild(tradeboardItem);
+           }
+
+  */
+
+    async function tradeBoardList(category, pageNum) {
+    const param = new URLSearchParams();
+    if (pageNum !== undefined && pageNum !== '') {
+        param.append("page", pageNum);
+        param.append("size", 12);
+    }
+    if (category !== undefined && category !== '') {
+        param.append("category", category);
+    }
+
+    const url = `http://localhost:8080/api/tradeboard/list?${param.toString()}`;
+    console.log(url);
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': localStorage.getItem('jwtToken')
+            }
+        });
+
+        if (response.status == 401) {
+            await refresh(localStorage.getItem('jwtToken'));
+            tradeBoardList(category, pageNum);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+        console.log("success");
+        //makeTradeBoard(data.content,pageNum+1);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function refresh(access) {
+    const url = "http://localhost:8080/token/refresh";
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `${access}`,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        localStorage.clear();
+        console.log(reponse.status);
+        alert("로그인이 필요한 서비스 입니다.");
+        //location.href = "/login";
+        return;
+    }else{
+    console.log(response.accessToken + " 성공");
+     localStorage.removeItem('jwtToken');
+     localStorage.setItem('jwtToken',response.accessToken);
+
+    const data = await response.json();
+    localStorage.setItem('jwtToken', data.accessToken);
+    }
+}
+
+
+       async function my(){
+        const nickname = localStorage.getItem("nickname");
+        if(!nickname){alert("로그인이 필요한 서비스 입니다.")
+            location.href="/login";
+        }
+        const url ="http://localhost:8080/api/user/"+nickname;
+        console.log(url);
+        const token = localStorage.getItem("jwtToken");
+        const response = await fetch(url,{
+            method:'GET',
+            headers:{
+                'Authorization' : token
+            }
+        });
+
+        if(response.status == 401){
+            refresh(token);
+            my();
+            return;
+        }
+
+        if(!response.ok){
+            alert("오류");
+        }
+
+        makeMyInfo(await response.json());
+
+    }
+
+    function makeMyInfo(data){
+        console.log(data);
+        return;
+     }
+
+</script>
 </html>

@@ -3,6 +3,7 @@ package com.example.twinkle.service.user;
 
 import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
+import com.example.twinkle.domain.entity.status.SocialLogin;
 import com.example.twinkle.dto.request.MemberRequestDto;
 import com.example.twinkle.dto.response.MemberResponseDto;
 import com.example.twinkle.repository.MemberRepository;
@@ -27,7 +28,7 @@ public class MemberService {
     public Long joinUser(MemberRequestDto memberRequestDto){
 
         memberRequestDto.setPassword(bCryptPasswordEncoder.encode(memberRequestDto.getPassword()));
-        MemberEntity memberEntity = memberRequestDto.toEntity();
+        MemberEntity memberEntity = memberRequestDto.toEntity(SocialLogin.NON);
 
         return memberRepository.save(memberEntity).getId();
 
