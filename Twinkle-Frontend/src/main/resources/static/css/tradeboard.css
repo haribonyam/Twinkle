@@ -1,0 +1,84 @@
+.tradeboard-bar{
+
+    width:inherit;
+    display: flex;
+    justify-content: space-between;
+    height:40px;
+    align-items: center;
+    background-color: #ccc;
+}
+.tradeboard-bar div{
+    box-sizing: border-box;
+    margin:10px;
+
+}
+.tradeboard-bar div:nth-child(1){
+    width:250px;
+    display: flex;
+    justify-content: space-evenly;
+}
+.tradeboard-bar div:nth-child(1) span{
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding :5px;
+}
+.tradeboard-bar div:nth-child(1) span:hover{
+    opacity: 0.3;
+}
+.tradeboard-bar div:nth-child(2){
+    padding:5px;
+    border: 1px solid black;
+    width:60px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tradeboard-bar div:nth-child(2):hover{
+    opacity: 0.3;
+}
+
+.tradeboard-item{
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+}
+.tradeboard-item li{
+    width:20vw;
+    height:30vw;
+    margin:10px;
+    border:1px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+.tradeboard-item li:hover{
+    opacity: 0.3;
+}
+.tradeboard-photo{
+    width:inherit;
+    height:20vw;
+    object-fit: contain;
+}
+.tradeboard-photo img{
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    padding:5px;
+}
+.tradeboard-price{
+    font-size: 20px;
+    font-weight: bold;
+    margin-top:5px;
+}
+.tradeboard-title{
+    width:inherit;
+    height:30px;
+    font-size:13px;
+    font-weight: bold;
+    overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+
+}

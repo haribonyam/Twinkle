@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>소셜로그인</title>
+</head>
+<body>
+<h>소셜로그인 진행중...</h>
+</body>
+<script>
+    function getAllCookies() {
+    const cookies = document.cookie.split(';');
+    const cookieObject = {};
+
+    cookies.forEach(cookie => {
+        const parts = cookie.split('=');
+        const name = parts[0].trim();
+        const value = parts.slice(1).join('=').trim(); // 합쳐진 값에 '='가 포함될 수 있으므로 다시 join 후 trim
+        cookieObject[name] = decodeURIComponent(value); // URL 디코딩하여 저장
+    });
+
+    return cookieObject;
+    }
+
+    async function sendCookiesToBackend() {
+    const cookies = getAllCookies();
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include' // 쿠키를 자동으로 백엔드로 전송하는 옵션
+    };
+
+    try {
+            const response = await fetch('http://localhost:8080/social', requestOptions);
+            if (response.ok) {
+                alert('로그인 성공!');
+                const responseBody = await response.json();
+
+                // jwtToken을 localStorage에 저장
+                const jwtToken = responseBody.jwtToken;
+                alert(jwtToken);
+                localStorage.setItem('jwtToken', jwtToken);
+
+                // nickname을 localStorage에 저장
+                const nickname = responseBody.nickname;
+                alert(nickname);
+                localStorage.setItem('nickname', nickname);
+
+                // id를 localStorage에 저장
+                const id = responseBody.id;
+                alert(id);
+                localStorage.setItem('id', id);
+
+                // 쿠키 삭제 로직 추가
+                Object.keys(cookies).forEach(cookieName => {
+                    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+                });
+
+                // 루트 경로로 이동
+                window.location.href = '/';
+            } else {
+                alert('로그인 실패!');
+                // 쿠키 삭제 로직 추가
+                Object.keys(cookies).forEach(cookieName => {
+                    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+                });
+                // 루트 경로로 이동
+                window.location.href = '/';
+            }
+        } catch (error) {
+            alert('네트워크 오류:', error);
+            // 쿠키 삭제 로직 추가
+            Object.keys(cookies).forEach(cookieName => {
+                document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+            });
+            // 루트 경로로 이동
+            window.location.href = '/';
+        }
+    }
+
+window.onload = function() {
+    sendCookiesToBackend();
+};
+
+
+</script>
+</html>
