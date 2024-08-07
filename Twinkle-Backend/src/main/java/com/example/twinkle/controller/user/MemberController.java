@@ -63,15 +63,19 @@ public class MemberController {
         return new ResponseEntity<>(status);
     }
 
-    /***
-     * 로그인한 회원 정보 닉네임으로 조회
-     * @param nickname
-     * @return
-     */
-    @GetMapping("/user/{nickname}")
-    public ResponseEntity<MemberResponseDto> findByNickname(@PathVariable String nickname){
-        log.info("approaching my info {}",nickname);
-        return ResponseEntity.ok(memberService.findByNickname(nickname));
+
+//    @GetMapping("/user/{nickname}")
+//    public ResponseEntity<MemberResponseDto> findByNickname(@PathVariable String nickname){
+//        log.info("approaching user info {}",nickname);
+//        return ResponseEntity.ok(memberService.findByNickname(nickname));
+//    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<MemberResponseDto> findByUsername(@PathVariable String username){
+        log.info("approaching user info {}",username);
+        return ResponseEntity.ok(memberService.findByUsername(username));
     }
+
+
 
 }

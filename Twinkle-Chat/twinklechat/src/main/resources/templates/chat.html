@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        #chat {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        #messageArea {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .message.sent {
+            background-color: #e1ffc7;
+            text-align: right;
+        }
+        .message.received {
+            background-color: #ffffff;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div id="chat">
+    <div id="messageArea"></div>
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button id="sendButton">Send</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    var stompClient = null;
+    var roomId = null;
+    var username = LocalStorage.getItem("Nickname");
+    var accessToken = "Bearer eyJhbGciOiJIUzM4NCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzIxNjQxMTIyLCJleHAiOjE3MjIwMDExMjJ9.oPx8w8nZbbSTrbR76CRLpQiu4KShyXIskchMEm-BJhY-Z58si5Dr55ysbsnZ5aKP";
+
+    function getChatList() {
+    const token = "Bearer eyJhbGciOiJIUzM4NCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzIxNjQxMTIyLCJleHAiOjE3MjIwMDExMjJ9.oPx8w8nZbbSTrbR76CRLpQiu4KShyXIskchMEm-BJhY-Z58si5Dr55ysbsnZ5aKP";
+    const url = "http://localhost:8082/rooms";
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Chat rooms:', data);
+        // 여기에 데이터 처리 로직 추가
+    })
+    .catch(error => {
+        console.error('Error fetching chat rooms:', error);
+    });
+}
+
+    function connect() {
+        var socket = new SockJS('/ws-stomp');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({Authorization : `${accessToken}`}, onConnected, onError);
+    }
+
+    function onConnected() {
+        stompClient.subscribe('/sub/1', onMessageReceived);
+    }
+
+    function onError(error) {
+        console.error('Could not connect to WebSocket server. Please refresh this page to try again!', error);
+    }
+
+    function sendMessage(event) {
+        var messageInput = document.getElementById('messageInput');
+        var messageContent = messageInput.value.trim();
+
+        if (messageContent && stompClient) {
+            var chatMessage = {
+                sender: username,
+                content: messageContent,
+                senderId: 1,
+                roomId: 1
+            };
+            stompClient.send("/pub/1", { Authorization: accessToken }, JSON.stringify(chatMessage));
+            saveMessage(chatMessage);
+            messageInput.value = '';
+        }
+    }
+
+    function saveMessage(message) {
+        fetch('/chat/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(message)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => console.log('Message saved:', data))
+        .catch(error => {
+            console.error('Error saving message:', error);
+            retrySaveMessage(message);
+        });
+    }
+
+    function onMessageReceived(payload) {
+        var message = JSON.parse(payload.body);
+        var messageElement = document.createElement('div');
+        messageElement.className = 'message';
+        messageElement.classList.add(message.sender === username ? 'sent' : 'received');
+        messageElement.textContent = message.sender + ": " + message.content;
+
+        var messageArea = document.getElementById('messageArea');
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    document.getElementById('sendButton').addEventListener('click', sendMessage);
+    document.getElementById('messageInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            sendMessage(event);
+        }
+    });
+
+    getChatList();
+
+</script>
+</body>
+</html>

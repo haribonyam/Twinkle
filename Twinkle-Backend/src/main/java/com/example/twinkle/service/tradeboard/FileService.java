@@ -43,7 +43,7 @@ public class FileService {
     public FileEntity setFile(MultipartFile file, TradeBoardEntity tradeBoard){
         String fileName = FileUtil.getCreateRandomName();
         String path = FileUtil.getFilePath(file,fileName);
-        File saveFile = new File(System.getProperty("user.dir"),fileName);
+        File saveFile = new File(path);
        try {
            file.transferTo(saveFile);
        }catch(IOException e){

@@ -1,5 +1,6 @@
 package com.example.twinkle.service.user;
 
+import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.dto.CustomUserDetails;
 import com.example.twinkle.repository.MemberRepository;
@@ -17,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MemberEntity userData = memberRepository.findByUsername(username);
+        MemberEntity userData = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);
 
         if (userData == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);

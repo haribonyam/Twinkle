@@ -36,7 +36,7 @@ public class TradeBoardService {
     public Long saveTradeBoardPost(TradeBoardRequestDto tradeBoardRequestDto, List<MultipartFile> files){
 
         MemberEntity member = memberRepository.findByNickname(tradeBoardRequestDto.getNickname())
-                .orElseThrow(ErrorCode::throwMeberNotFound);
+                .orElseThrow(ErrorCode::throwMemberNotFound);
 
         TradeBoardEntity tradeBoardEntity = TradeBoardRequestDto.toEntity(
                 tradeBoardRequestDto.getNickname(),member,tradeBoardRequestDto.getContent(),tradeBoardRequestDto.getTitle(),

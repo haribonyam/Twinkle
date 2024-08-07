@@ -44,7 +44,7 @@ public class SnsPostService {
 
     @Transactional
     public SnsPostResponseDto findById(Long id) {
-        SnsPostEntity snsPost = snsPostRepository.findPostById(id).orElseThrow(ErrorCode::throwPostNotFound);
+        SnsPostEntity snsPost = snsPostRepository.findPostById(id).orElseThrow(ErrorCode::throwSnsPostNotFound);
         snsPost.viewCountUp();
         return SnsPostResponseDto.builder()
                 .snsPostEntity(snsPost)
@@ -53,7 +53,7 @@ public class SnsPostService {
 
     @Transactional
     public void updatePost(SnsPostRequestDto snsPostRequestDto) {
-        SnsPostEntity snsPost = snsPostRepository.findById(snsPostRequestDto.getId()).orElseThrow(ErrorCode::throwPostNotFound);
+        SnsPostEntity snsPost = snsPostRepository.findById(snsPostRequestDto.getId()).orElseThrow(ErrorCode::throwSnsPostNotFound);
         snsPost.updatePost(snsPostRequestDto);
 
     }
@@ -71,7 +71,7 @@ public class SnsPostService {
 
     @Transactional
     public void likePost(Long id,String condition) {
-        SnsPostEntity snsPost =snsPostRepository.findById(id).orElseThrow(ErrorCode::throwPostNotFound);
+        SnsPostEntity snsPost =snsPostRepository.findById(id).orElseThrow(ErrorCode::throwSnsPostNotFound);
         if(condition.equals("up")){
             snsPost.goodCountUp();
         }

@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @RequiredArgsConstructor
+@Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -26,13 +28,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
         String username = obtainUsername(request);
         String password = obtainPassword(request);
-
-
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username,password, null);
-
         return authenticationManager.authenticate(authToken);
     }
 
@@ -53,9 +51,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createRefreshToken(username);
 
         refreshTokenService.saveToken(access,refresh,username);
+        log.info("nickname : {}",nickname);
+        log.info("id : {}",id);
 
-        response.addHeader("Authorization","Bearer "+access);
         response.addHeader("Nickname",nickname);
+        response.addHeader("Authorization","Bearer "+access);
         response.addHeader("Id",String.valueOf(id));
 
     }

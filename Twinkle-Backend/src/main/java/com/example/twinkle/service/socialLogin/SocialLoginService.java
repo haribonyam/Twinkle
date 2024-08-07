@@ -1,6 +1,7 @@
 package com.example.twinkle.service.socialLogin;
 
 import com.example.twinkle.common.config.auth.JwtUtil;
+import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.domain.entity.status.SocialLogin;
 import com.example.twinkle.repository.MemberRepository;
@@ -56,7 +57,7 @@ public class SocialLoginService extends DefaultOAuth2UserService{
             email = "kakao@email.com";
         }
 
-        MemberEntity memberData = memberRepository.findByUsername(userId);
+        MemberEntity memberData = memberRepository.findByUsername(userId).orElseThrow(ErrorCode::throwMemberNotFound);
 
         if(memberData == null){
             MemberEntity socialMember = MemberEntity.builder()

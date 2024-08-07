@@ -8,6 +8,7 @@ import com.example.twinkle.domain.entity.TradeBoardEntity;
 import com.example.twinkle.dto.response.TradeBoardResponseDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.example.twinkle.domain.entity.QFileEntity.fileEntity;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -36,7 +39,7 @@ public class CustomTradeBoardRepositoryImpl implements CustomTradeBoardRepositor
 
             List<TradeBoardEntity> result = jpaQueryFactory.selectFrom(TradeBoard)
                     .leftJoin(TradeBoard.member, member)
-                    .leftJoin(TradeBoard.files, files)
+                    .leftJoin(TradeBoard.files, fileEntity)
                     .fetchJoin()
                     .where(condition(searchCondition))
                     .orderBy(TradeBoard.id.desc())
@@ -47,13 +50,17 @@ public class CustomTradeBoardRepositoryImpl implements CustomTradeBoardRepositor
             List<TradeBoardResponseDto> content = result.stream().map(TradeBoardResponseDto::toDto).collect(Collectors.toList());
 
         log.info("page select fin");
-        JPAQuery<TradeBoardEntity> totalCount = jpaQueryFactory.select(TradeBoard)
+        JPAQuery<Long> totalCountQuery = jpaQueryFactory.select(
+                        TradeBoard.id.countDistinct()
+                )
                 .from(TradeBoard)
-                .leftJoin(TradeBoard.member, member).fetchJoin()
-                .leftJoin(TradeBoard.files, files).fetchJoin()
+                .leftJoin(TradeBoard.member, member)
+                .leftJoin(TradeBoard.files, files)
                 .where(condition(searchCondition));
 
-        return PageableExecutionUtils.getPage(content, pageable, totalCount::fetchCount);
+        Long totalCount = totalCountQuery.fetchOne(); // 총 개수 가져오기
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
 
     }
 
