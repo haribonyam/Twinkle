@@ -1,77 +1,54 @@
 
-function joinPro() {
-        // 폼 데이터를 가져오기
-        let formData = {
-            username: document.getElementById("username").value,
-            nickname: document.getElementById("nickname").value,
-            password: document.getElementById("password").value,
-            email: document.getElementById("email").value
-        };
-
-        // 서버로 데이터를 전송
-        fetch('http://localhost:8080/api/user/save', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            alert('회원가입이 완료되었습니다.');
-            location.href="/";
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('회원가입 중 오류가 발생했습니다.');
+  async function showMyInfo(){
+        const nickname = localStorage.getItem("nickname");
+        if(!nickname){alert("로그인이 필요한 서비스 입니다.")
+            location.href="/login";
+        }
+        const url ="http://localhost:8080/api/user/"+nickname;
+        console.log(url);
+        const token = localStorage.getItem("jwtToken");
+        const response = await fetch(url,{
+            method:'GET',
+            headers:{
+                'Authorization' : token
+            }
         });
+
+        if(response.status == 401){
+            refreshToken();
+            my();
+            return;
+        }
+        if(!response.ok){
+            alert("서버의 문제가 발생했습니다. 잠시후 다시 시도하세요.");
+            return;
+        }
+        makeMyInfo(await response.json());
     }
-
-  function joinCheck(type){
-     const baseUri = "http://localhost:8080/api/user/check/" + type;
-     const param = document.getElementById(type).value;
-     const params = new URLSearchParams();
-     params.append(type,param);
-
-     var messages={
-        username:"아이디",
-        nickname:"닉네임",
-        email:"이메일"
-     };
-     var message = messages[type];
-
-     if(param==""){
-        alert(message +"를 입력해 주세요.");
+    function makeMyInfo(data){
+        console.log(data);
         return;
      }
 
-         fetch(`${baseUri}?${params.toString()}`)
-         .then(response=>{
-             if(response.ok){
-                 alert("사용 가능한 "+message+" 입니다.");
-             }else{
-                 alert("중복된 "+message+" 입니다.");
-             }
-         })
-         .catch(error=>{
-             alert(message+" 중복확인 도중 오류가 발생하였습니다.");
-         });
 
-     }
+function dateDifference(date) {
+    const inputDate = new Date(date);
+    const currentDate = new Date();
 
+    inputDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
 
-   function checkLoginStatus() {
-           const loginButton = document.getElementById('loginButton');
-           const nickname = localStorage.getItem('nickname');
+    const timeDifference = currentDate - inputDate;
 
-           if (nickname) {
-               // 로그인된 경우
-               loginButton.textContent = '로그아웃';
-               loginButton.setAttribute('onclick', 'logoutPro()');
-           } else {
-               // 로그인되지 않은 경우
-               loginButton.textContent = '로그인';
-               loginButton.setAttribute('onclick', 'location.href="/login"');
-           }
-       }
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
+
+    const dayDifference = Math.floor(timeDifference / oneDayInMillis);
+
+    if (dayDifference === 0) {
+        return "오늘";
+    } else if (dayDifference === 1) {
+        return "하루 전";
+    } else if (dayDifference > 1) {
+        return `${dayDifference}일 전`;
+    }
+}

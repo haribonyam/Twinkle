@@ -6,19 +6,27 @@
     <title>회원가입</title>
     <link rel="stylesheet" type="text/css" href="/css/join.css">
     <link rel="stylesheet" type="text/css" href="/css/common.css">
-    <script src="/script/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
 </head>
 <body>
+<header class="main-header">
+    <div class="header-bar">
+        <div onclick="location.href='/'">로고</div>
+        <div id="loginButton" class="header-inout" onclick='location.href="/login"'>로그인</div>
+    </div>
+</header>
 <article class="main-join">
-    <ul class="join-container">
+    <ul class="join-container" id="joinContainer">
         <p>반짝 회원가입</p>
         <li><div>아이디</div><input type="text" id="username"><span class="join-check" onclick="joinCheck('username')">중복확인</span></li>
-        <li><div>이메일</div><input type="text" id="email"><span class="join-check" onclick="joinCheck('email')">중복확인</span></li>
         <li><div>닉네임</div><input type="text" id="nickname"><span class="join-check" onclick="joinCheck('nickname')">중복확인</span></li>
         <li><div>비밀번호</div><input type="password" id="password"><span></span></li>
         <li><div>비밀번호 확인</div><input type="password"><span></span></li>
+        <li><div>이메일</div><input type="text" id="email"><span class="join-check" onclick="joinCheck('email')">중복확인</span></li>
     </ul>
     <div id="joinButton" class="join-button" onclick="joinPro()">회원가입</div>
 </article>
 </body>
+<script src="/script/join.js"></script>
+<scirpt src="/script/common.js"></scirpt>
 </html>

@@ -1,5 +1,6 @@
 package com.example.twinkle.common.util;
 
+import com.example.twinkle.common.exception.ErrorCode;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,9 @@ public class FileUtil {
     public static String getFilePath(MultipartFile file, String fileName){
 
         String extension = StringUtils.getFilenameExtension(Objects.requireNonNull(file.getOriginalFilename()));
+        if(!extension.equals("jpg")&&!extension.equals("png")){
+            ErrorCode.throwExtensionNotAcceptable();
+        }
         return BASE_DIRECTORY+"/"+fileName+"."+extension;
     }
 

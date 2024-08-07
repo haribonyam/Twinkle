@@ -5,6 +5,7 @@ import com.example.twinkle.dto.response.TokenResponseDto;
 import com.example.twinkle.service.user.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenController {
 
         private final RefreshTokenService refreshTokenService;
-    @PostMapping("/user/logout")
+    @DeleteMapping("/token")
     public void logout(@RequestHeader("Authorization") final String access){
         refreshTokenService.deleteRefreshToken(access);
     }
-    @PostMapping("/token/refresh")
+    @PostMapping("/token")
     public ResponseEntity<TokenResponseDto> refreshToken(@RequestHeader("Authorization") final String access){
         System.out.println(access.split("Bearer ")[1]);
         String accessToken = refreshTokenService.republishAccessToken(access.split("Bearer ")[1]);

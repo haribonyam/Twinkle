@@ -63,7 +63,16 @@ public class MemberService {
     }
 
     public MemberResponseDto findByNickname(String nickname) {
-        MemberEntity member = memberRepository.findByNickname(nickname).orElseThrow(ErrorCode::throwMeberNotFound);
+        MemberEntity member = memberRepository.findByNickname(nickname).orElseThrow(ErrorCode::throwMemberNotFound);
         return new MemberResponseDto(member);
+    }
+
+    public String findnickname(Long id) {
+        return memberRepository.findById(id).get().getNickname();
+    }
+
+    public MemberResponseDto findByUsername(String username) {
+       MemberEntity member = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);
+       return new MemberResponseDto(member);
     }
 }

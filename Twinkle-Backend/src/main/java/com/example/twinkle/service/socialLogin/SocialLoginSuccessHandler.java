@@ -1,6 +1,7 @@
 package com.example.twinkle.service.socialLogin;
 
 import com.example.twinkle.common.config.auth.JwtUtil;
+import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.domain.redis.RefreshToken;
 import com.example.twinkle.repository.MemberRepository;
@@ -34,7 +35,7 @@ public class SocialLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
-        MemberEntity member = memberRepository.findByUsername(username);
+        MemberEntity member = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
