@@ -1,6 +1,8 @@
 package com.example.twinkle.service.user;
 
 
+import com.example.twinkle.common.config.auth.JwtUtil;
+import com.example.twinkle.common.exception.CustomException;
 import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.domain.entity.status.SocialLogin;
@@ -24,6 +26,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
 
     public Long joinUser(MemberRequestDto memberRequestDto){
 
@@ -70,6 +73,31 @@ public class MemberService {
     public String findnickname(Long id) {
         return memberRepository.findById(id).get().getNickname();
     }
+
+    /***
+     * jwt 정보와 memberId 정보로 교차 검증
+     * @param jwt
+     * @param memberId
+     * @return nickname
+     */
+    @Transactional
+    public String userValidation(String jwt, Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow(ErrorCode::throwMemberNotFound);
+
+        if (jwt != null && jwt.startsWith("Bearer ")) {
+            String token = jwt.substring(7);
+            String username = jwtUtil.getUserName(token);
+
+            if (member.getUsername().equals(username)) {
+                return member.getNickname();
+            } else {
+                ErrorCode.throwMemberNotFound();
+            }
+        } else {
+            ErrorCode.throwInvalidToken();
+        }
+        return null; }
+
 
     public MemberResponseDto findByUsername(String username) {
        MemberEntity member = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);

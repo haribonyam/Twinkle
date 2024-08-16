@@ -62,6 +62,11 @@ public class MemberController {
 
         return new ResponseEntity<>(status);
     }
+    @GetMapping("/user/check/{memberId}")
+    public ResponseEntity<String> validationMember(@PathVariable Long memberId,@RequestHeader("Authorization") String jwt){
+        String nickname = memberService.userValidation(jwt,memberId);
+        return ResponseEntity.ok(nickname);
+    }
 
 
 //    @GetMapping("/user/{nickname}")
@@ -75,7 +80,5 @@ public class MemberController {
         log.info("approaching user info {}",username);
         return ResponseEntity.ok(memberService.findByUsername(username));
     }
-
-
 
 }

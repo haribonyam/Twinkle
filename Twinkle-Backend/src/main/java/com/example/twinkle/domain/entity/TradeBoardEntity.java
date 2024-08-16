@@ -55,6 +55,8 @@ public class TradeBoardEntity {
     @Column(name="item_condition")
     private Condition condition;
 
+    private Long buyer;
+
     @Builder
     public TradeBoardEntity(String nickname,String content,String title,
                             Integer price,String category,MemberEntity member){
@@ -67,6 +69,7 @@ public class TradeBoardEntity {
         this.condition = Condition.판매중;
         this.view = 0;
     }
+
     public void addFiles(FileEntity file){
         this.files.add(file);
         file.addTradeBoard(this);
@@ -92,4 +95,12 @@ public class TradeBoardEntity {
 
         this.view++;
     }
+
+    public void updateCondition(Condition condition){
+        this.condition = condition;
+    }
+    public void setBuyer(Long buyer){
+        this.buyer= buyer;
+    }
+
 }

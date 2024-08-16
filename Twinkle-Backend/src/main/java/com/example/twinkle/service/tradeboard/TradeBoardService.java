@@ -4,6 +4,7 @@ package com.example.twinkle.service.tradeboard;
 import com.example.twinkle.common.exception.ErrorCode;
 import com.example.twinkle.domain.entity.MemberEntity;
 import com.example.twinkle.domain.entity.TradeBoardEntity;
+import com.example.twinkle.domain.entity.status.Condition;
 import com.example.twinkle.dto.request.TradeBoardRequestDto;
 import com.example.twinkle.dto.response.TradeBoardResponseDto;
 import com.example.twinkle.repository.MemberRepository;
@@ -85,5 +86,19 @@ public class TradeBoardService {
         }else{
             ErrorCode.throwPostNotFound();
         }
+    }
+
+    /***
+     * 거래요청(약속)
+     * @param tradeBoardId
+     * @param buyerId
+     * @return
+     */
+    @Transactional
+    public Long requestTrade(Long tradeBoardId, Long buyerId) {
+        TradeBoardEntity tradeBoard =tradeBoardRepository.findById(tradeBoardId).orElseThrow(ErrorCode::throwPostNotFound);
+        tradeBoard.updateCondition(Condition.에약중);
+        tradeBoard.setBuyer(buyerId);
+        return tradeBoard.getId();
     }
 }

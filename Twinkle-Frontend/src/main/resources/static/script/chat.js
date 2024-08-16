@@ -179,6 +179,8 @@ function populateChatRoom(data) {
                     <div class="condition">
                         ${tradeBoard.condition}
                     </div>
+                    <div class="schedule" id="payOrSchedule" onclick="navigateToAction(this)"></div>
+
     `;
 
     const inputChat = `
@@ -373,3 +375,11 @@ function disconnect(){
         }
 }
 
+function navigateToAction(element){
+        const text = element.textContent.trim();
+        if(text === "약속잡기"){
+            console.log("약속잡기 핸들링");
+        }else{
+            console.log("페이결제 핸들링");
+        }
+    }
