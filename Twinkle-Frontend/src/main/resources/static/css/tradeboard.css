@@ -281,3 +281,153 @@ body {
 .close:hover {
     color: #bbb;
 }
+
+
+/*tradeboard write*/
+.tradeboard-write-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* 최대 너비를 800px로 설정 */
+    width: 100%; /* 화면이 좁을 때 100%로 설정 */
+}
+
+.tradebaord-write-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.tradeboard-form-group {
+    margin-bottom: 20px;
+}
+
+.tradebaord-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.tradeboard-price,
+ .tradeboard-title,
+ .tradeboard-content,
+ .tradeboard-category{
+    width: 90%;
+    max-width:450px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #fdfdfd;
+    transition: border-color 0.3s;
+}
+.tradeboard-category{
+    width:45%;
+    max-width:225px;
+}
+.tradeboard-content{
+   width:100%;
+   max-width:1080px;
+   overflow: hidden;
+}
+.tradeboard-price{
+    max-width:350px;
+}
+
+.tradeboard-price:focus,
+ .tradeboard-title:focus,
+ .tradeboard-content:focus,
+ .tradeboard-category:focus{
+    border-color: #007bff;
+}
+
+.tradeboard-content{
+    resize: none;
+    overflow-y: scroll;
+
+}
+
+.image-upload-container {
+    position: relative;
+    width: 100%;
+}
+
+.image-preview {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 이미지를 한 행에 5개씩 배치 */
+    grid-gap: 5px;
+    background-color: #f5f5f5;
+    padding: 5px;
+    position: relative;
+    height: 140px; /* 높이를 고정하여 이미지가 추가되더라도 높이가 늘어나지 않도록 */
+
+}
+
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.upload-placeholder {
+    height:inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background-color: #e9ecef;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+}
+
+.image-count {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.tradeboard-button {
+    margin:0 auto;
+    width: 120px;
+    height:30px;
+    padding:15px;
+    text-align:center;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.tradeboard-button:hover {
+    background-color: #0056b3;
+}
+
+@media(max-width:799px) {
+    .image-preview {
+        height:100px;
+    }
+    .upload-placeholder {
+    font-size:12px;
+    }
+}
+@media(max-width:550px) {
+    .image-preview {
+        height:80px;
+    }
+    .upload-placeholder {
+
+        font-size:9px;
+    }
+}

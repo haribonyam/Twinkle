@@ -1,8 +1,160 @@
+function createTradeBoardWrite(){
+    init();
+    const viewBox = document.getElementById("viewBox");
+    viewBox.innerHTML='';
+
+    const tradeBoardWriteItem = `
+    <div class="tradebaord-write-container">
+                <h1>중고거래 게시물 작성</h1>
+                    <div class="tradeboard-form-group">
+                        <label for="title">제목</label><br></br>
+                        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required class="tradeboard-title">
+                    </div>
+                    <div class="tradeboard-form-group">
+                        <label for="category">카테고리</label><br></br>
+                        <select id="category" name="category" required class="tradeboard-category">
+                            <option value="" disabled selected>카테고리를 선택하세요</option>
+                            <option value="향수">향수</option>
+                            <option value="화장품">화장품</option>
+                            <option value="미용기기">미용기기</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="tradeboard-form-group">
+                        <label for="price">가격</label><br></br>
+                        <input type="text" id="price" name="price" class="tradeboard-price" placeholder="가격을 입력하세요" required>
+                    </div>
+                    <div class="tradeboard-form-group">
+                        <label for="files">이미지 업로드</label><br></br>
+                        <div class="image-upload-container">
+                            <div class="image-preview" id="imagePreview">
+                                <div class="upload-placeholder" onclick="document.getElementById('fileInput').click();">
+                                    <span>이미지를 클릭하여 업로드하세요</span>
+                                </div>
+                            </div>
+                            <input type="file" id="fileInput" name="files" accept="image/*" multiple style="display: none;" onchange="handleFiles(this.files)">
+                        </div>
+                        <div class="image-count" id="imageCount">0/5</div>
+                    </div>
+                    <div class="tradeboard-form-group">
+                        <label for="content">내용</label><br></br>
+                        <textarea id="content" name="content" rows="6" placeholder="내용을 입력하세요" required class="tradeboard-content"></textarea>
+                    </div>
+                    <div class="tradeboard-button" onclick="tradeboardWrite()">게시물 작성</div>
+            </div>
+    `;
+    viewBox.innerHTML +=tradeBoardWriteItem;
+}
+
+let uploadedImages = []; // 업로드된 이미지 파일을 저장할 배열
+
+function handleFiles(files) {
+    const imagePreview = document.getElementById('imagePreview');
+    const imageCount = document.getElementById('imageCount');
+
+    // 선택된 파일을 배열로 변환하여 업로드된 이미지 배열에 추가
+    Array.from(files).forEach(file => {
+        if (uploadedImages.length < 5) {
+            uploadedImages.push(file);
+        }
+    });
+
+    // 미리보기 초기화
+    imagePreview.innerHTML = '';
+    if (uploadedImages.length < 5) {
+            const uploadPlaceholder = document.createElement('div');
+            uploadPlaceholder.classList.add('upload-placeholder');
+            uploadPlaceholder.onclick = () => document.getElementById('fileInput').click();
+            uploadPlaceholder.innerHTML = '<span>이미지를 클릭하여 업로드하세요</span>';
+            imagePreview.appendChild(uploadPlaceholder);
+        }
+
+    // 이미지 미리보기 생성
+    uploadedImages.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.classList.add('upload-placeholder');
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.classList.add('preview-img');
+            div.appendChild(img);
+            imagePreview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+
+
+
+    // 이미지 개수 표시 업데이트
+    imageCount.textContent = `${uploadedImages.length}/5`;
+}
+
+async function tradeboardWrite() {
+    // 입력된 값 가져오기
+    const title = document.getElementById('title').value;
+    const category = document.getElementById('category').value;
+    const price = document.getElementById('price').value;
+    const content = document.getElementById('content').value;
+    const fileInput = document.getElementById('fileInput');
+
+    // FormData 객체 생성
+    const formData = new FormData();
+
+    // 게시물 정보를 객체로 생성
+    const tradeBoardRequestDto = {
+        title: title,
+        category: category,
+        price: price,
+        content: content,
+        nickname:username
+    };
+
+    // 객체를 JSON 문자열로 변환하여 FormData에 추가
+    formData.append('tradeBoardRequestDto', new Blob([JSON.stringify(tradeBoardRequestDto)], { type: 'application/json' }));
+
+    // 이미지 파일이 있는 경우 FormData에 추가
+    const files = fileInput.files;
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+    }
+
+    const url = "http://localhost:8080/api/tradeboard/save";
+
+    try {
+        // 서버로 POST 요청
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': accessToken  // 토큰이 필요한 경우 사용
+            }
+        });
+
+        // 응답 처리
+        const data = await response.json();  // 응답 데이터를 JSON으로 파싱
+
+        if (!response.ok) {
+            console.error("오류 응답:", data);
+        } else {
+          await showTradeBoardInfo(data);
+        }
+    } catch (error) {
+        console.error("서버에서 오류 발생:", error);
+    }
+}
+
+
+
+
+
 function showTradeBoardList() {
+            isShowTradeBoard=true;
             isLastPage=false;
             const viewBox = document.getElementById('viewBox');
             viewBox.innerHTML = `
-                <input type="hidden" id="page">
+                <input type="hidden" id="page" value="0">
                 <input type="hidden" id="category">
                 <div class="tradeboard-bar">
                     <div>
@@ -11,7 +163,7 @@ function showTradeBoardList() {
                         <span onclick="setCategory('향수')">향수</span>
                         <span onclick="setCategory('미용기기')">미용기기</span>
                     </div>
-                    <div onclick="tradeBoardWrite()">글쓰기</div>
+                    <div onclick="createTradeBoardWrite()">글쓰기</div>
                 </div>
                 <div id="grid-container" class="grid-container"></div>
             `;
@@ -118,7 +270,7 @@ function showTradeBoardList() {
         }
 
        function handleScroll() {
-           if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10) {
+           if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10 && isShowTradeBoard) {
                loadMore();
            }
        }
@@ -167,7 +319,7 @@ function showTradeBoardList() {
                modalImage.src = src;
            }
 
-       function closeModal() {
+       function imageCloseModal() {
                const modal = document.getElementById('imageModal');
                modal.style.display = "none";
        }
@@ -176,7 +328,7 @@ function showTradeBoardList() {
 
             const viewBox = document.getElementById('viewBox');
             viewBox.innerHTML ='';
-            const productDetailHTML = `
+            var productDetailHTML = `
                 <div class="product-detail">
                     <h1 class="product-title">${data.title}</h1>
                     <p class="product-price">${data.price.toLocaleString()}원</p>
@@ -194,11 +346,35 @@ function showTradeBoardList() {
                     <!-- 1:1 채팅 버튼 -->
                     <button class="chat-button" onclick="startChat(${data.id})">1:1 채팅</button>
                 </div>
-                <div id="imageModal" class="modal" onclick="closeModal()">
+                <div id="imageModal" class="modal" onclick="imageCloseModal()">
                         <span class="close">&times;</span>
                         <img class="modal-content" id="modalImage">
                 </div>
             `;
+            if(Number(data.memberId) === Number(userId)){
+                productDetailHTML=`
+                <div class="product-detail">
+                                    <h1 class="product-title">${data.title}</h1>
+                                    <p class="product-price">${data.price.toLocaleString()}원</p>
+                                    <p class="product-seller">${data.nickname}</p>
+                                    <div class="product-view-info">
+                                        <span class="view-icon">👁️</span>
+                                        <span class="view-count">${data.view}</span>
+                                    </div>
+                                    <div class="product-images">
+                                        ${data.paths.map(img => `<img src="${img}" alt="Product Image" onclick="openModal('${img}')">`).join('')}
+                                    </div>
+                                    <div class="product-description">
+                                        <p>${data.content}</p>
+                                    </div>
+
+                                </div>
+                                <div id="imageModal" class="modal" onclick="imageCloseModal()">
+                                        <span class="close">&times;</span>
+                                        <img class="modal-content" id="modalImage">
+                                </div>`
+
+            }
 
             viewBox.innerHTML = productDetailHTML;
        }
@@ -211,5 +387,6 @@ function showTradeBoardList() {
 
        }
 
+       function isBuyer(){
 
-
+       }

@@ -160,3 +160,42 @@
     padding:5px;
     color:green;
 }
+
+ .schedule{
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            width:80px;
+            height:30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index:1001;
+        }
+        .schedule:before{
+            content:"약속잡기";
+            font-size:13px;
+            font-weight: bolder;
+        }
+        .schedule:hover{
+            opacity: 0.3;
+        }
+        .payment{
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            width:80px;
+            height:30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index:1001;
+        }
+        .payment:before{
+            content:"반짝페이";
+            font-size:13px;
+            font-weight: bolder;
+        }
+        .payment:hover{
+            opacity: 0.3;
+        }

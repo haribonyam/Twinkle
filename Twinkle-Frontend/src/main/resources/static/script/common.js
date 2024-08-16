@@ -9,6 +9,7 @@ let userId = localStorage.getItem("id");
 let accessToken = localStorage.getItem("jwtToken");
 let senderTemp = null;
 let retryCount = 0;
+let isShowTradeBoard = false;
 
 function navigateToPage(page) {
     init();
@@ -35,12 +36,14 @@ function navigateToPage(page) {
 }
 
 function init() {
+    isShowTradeBoard = false;
     isTradeBoardLoaded = false;
     isLoading = false;
     isLastPage = false;
     roomId = null;
     tradeBoardId = null;
     senderTemp = null;
+    uploadedImages = [];
     if (stompClient!==null) {
         disconnect();
     }

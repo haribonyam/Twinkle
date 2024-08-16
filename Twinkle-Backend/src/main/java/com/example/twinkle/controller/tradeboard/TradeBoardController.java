@@ -6,6 +6,7 @@ import com.example.twinkle.dto.response.TradeBoardResponseDto;
 import com.example.twinkle.service.tradeboard.TradeBoardService;
 import jakarta.servlet.ServletOutputStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class TradeBoardController {
 
     private final TradeBoardService tradeBoardService;
@@ -30,6 +32,7 @@ public class TradeBoardController {
      * */
     @PostMapping("/tradeboard/save")
     public ResponseEntity<Long> TradeBoardPostSave(@RequestPart TradeBoardRequestDto tradeBoardRequestDto,@RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
+        log.info("tradeboard save pro");
         Long id = tradeBoardService.saveTradeBoardPost(tradeBoardRequestDto,files);
         return ResponseEntity.ok().body(id);
     }
@@ -77,6 +80,12 @@ public class TradeBoardController {
     @GetMapping("/tradeboard/{id}")
     public ResponseEntity<TradeBoardResponseDto> TradeBoardPost(@PathVariable Long id){
         return ResponseEntity.ok(tradeBoardService.findById(id));
+    }
+
+    @GetMapping("/tradeboard/request/{id}")
+    public ResponseEntity<Long> RequestTrade(@PathVariable Long tradeBoardId, @RequestParam Long buyerId){
+
+        return ResponseEntity.ok(tradeBoardService.requestTrade(tradeBoardId,buyerId));
     }
 
 }

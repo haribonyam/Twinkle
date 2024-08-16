@@ -16,8 +16,8 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(NOT_FOUND, "회원 정보를 찾을 수 없습니다.", "007"),
     POST_NOT_FOUND(NOT_FOUND, "게시물 정보를 찾을 수 없습니다.", "008"),
     FILE_MAX_SIZE(PAYLOAD_TOO_LARGE, "허용된 이미지 크기를 초과했습니다.(3MB)", "009"),
-    EXTENSION_NOT_ALLOWED(NOT_ACCEPTABLE,"jpg 혹은 png 확장자만 사용 가능합니다.","010");
-
+    EXTENSION_NOT_ALLOWED(NOT_ACCEPTABLE,"jpg 혹은 png 확장자만 사용 가능합니다.","010"),
+    INVALID_TOKEN(UNAUTHORIZED,"토큰정보를 가져올 수 없습니다. 다시 로그인 해주세요.","015");
 
     private final HttpStatus httpStatus;
     private final String detail;
@@ -53,5 +53,9 @@ public enum ErrorCode {
     }
     public static CustomException throwExtensionNotAcceptable(){
       throw new CustomException(EXTENSION_NOT_ALLOWED);
+    }
+
+    public static CustomException throwInvalidToken(){
+        throw new CustomException(INVALID_TOKEN);
     }
 }

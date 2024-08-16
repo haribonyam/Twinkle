@@ -28,4 +28,7 @@ public class FrontController {
         return "socialLogin";
     }
 
+    @GetMapping("/paytest")
+    public String paytest(){return "paytest";}
+
 }
