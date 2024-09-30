@@ -1,0 +1,26 @@
+ul{
+    margin:0;
+    padding:0;
+    list-style: none;
+}
+body{
+    margin:0;
+    padding:0;
+}
+.kakao{
+    background-img : src("/img/kakao_login.png");
+}
+.toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    z-index: 1000;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+    animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+}
