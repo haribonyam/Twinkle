@@ -1,17 +1,22 @@
 .main-view{
     width:80%;
     margin:0 auto;
-    margin-top:15px;
     display: flex;
-    align-items: center;
+    align-item: center;
 }
 
 .view-box{
+    margin-top:0;
     width:100%;
     height:auto;
     box-sizing: border-box;
 }
-
+.not-found{
+   height:800px;
+   text-align :center;
+   color:#ccc;
+   line-height :400px;
+}
 
 @media (max-width: 768px) {
     .main-view{

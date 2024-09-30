@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
@@ -44,7 +45,12 @@ public class SnsPostEntity {
     private LocalDateTime createdDate;
 
     @OneToMany(mappedBy = "snsPost",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<FileEntity> files = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "snsPost",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+//    @BatchSize(size = 100)
+//    private List<CommentEntity> comments = new ArrayList<>();
 
     @Builder
     public SnsPostEntity(Long memberId,String category,String title,String content,String nickname,Integer viewCount,Integer likeCount){
@@ -65,6 +71,11 @@ public class SnsPostEntity {
         this.files.add(file);
         file.addPost(this);
     }
+
+//    public void addComment(CommentEntity comment){
+//        this.comments.add(comment);
+//        comment.addPost(this);
+//    }
 
     public void updatePost(SnsPostRequestDto snsPostRequestDto){
         this.title = snsPostRequestDto.getTitle();

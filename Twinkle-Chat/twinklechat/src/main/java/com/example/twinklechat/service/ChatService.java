@@ -2,7 +2,6 @@ package com.example.twinklechat.service;
 
 import com.example.twinklechat.common.exception.ErrorCode;
 import com.example.twinklechat.common.interceptor.JwtHandler;
-import com.example.twinklechat.common.util.RoomUtil;
 import com.example.twinklechat.domain.entity.RoomEntity;
 import com.example.twinklechat.domain.mongo.Chatting;
 import com.example.twinklechat.dto.chat.Message;
@@ -17,12 +16,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +33,7 @@ public class ChatService {
     private final TwinkleService twinkleService;
     private final RoomRepository roomRepository;
     private final ChattingRepository chattingRepository;
+    private final MongoTemplate mongoTemplate;
     private final CircuitBreakerFactory circuitBreakerFactory;
     private final JwtHandler jwtHandler;
 
@@ -67,16 +69,23 @@ public class ChatService {
 
     @Transactional
     public List<RoomResponseDto> findRoomList(String accessToken) {
-
+        log.info("FIND CHAT LIST : {}",accessToken);
         String username =jwtHandler.getUserName(accessToken);
-
+        log.info("CHAT LIST USERNAME :{}",username);
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
         ResponseEntity<MemberResponseDto> member = circuitBreaker.run(() ->
                         twinkleService.findByUsername(username),
-                throwable -> ResponseEntity.ok(null));
-
+                throwable -> {
+                    log.error("Error fetching member info: {}", throwable.getMessage());
+                    return ResponseEntity.ok(null); // fallback 처리
+                }
+        );
         Long memberId = member.getBody().getId();
+        log.info("member id : {}!!",memberId);
         List<RoomEntity> rooms = roomRepository.findAllByMemberId(memberId);
+        if (rooms.isEmpty()) {
+            throw ErrorCode.throwChatNotExist();
+        }
 
         return rooms.stream()
                 .map(RoomResponseDto::new)
@@ -89,6 +98,7 @@ public class ChatService {
      * @param roomId
      * @return
      */
+    @Transactional
     public RoomResponseDto enterRoom(String accessToken, Long roomId) {
 
         String username = jwtHandler.getUserName(accessToken);
@@ -139,7 +149,6 @@ public class ChatService {
         return room.getRoomId();
     }
 
-
     public MemberResponseDto getMember(String username){
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
         ResponseEntity<MemberResponseDto> member = circuitBreaker.run(() ->
@@ -148,4 +157,23 @@ public class ChatService {
         return member.getBody();
     }
 
+    @Transactional
+    public void deleteChatRoom(Long tradeBoardId) {
+        List<RoomEntity> chatRoomList = roomRepository.findByTradeBoardId(tradeBoardId);
+
+        List<Long> deletedChatNos = chatRoomList.stream().map(chatRoom -> {
+
+            Long chatRoomId = chatRoom.getRoomId();
+            roomRepository.delete(chatRoom);
+            return chatRoomId;
+        }).collect(Collectors.toList());
+
+        deleteChatting(deletedChatNos);
+    }
+    @Transactional
+    public void deleteChatting(List<Long> chatRoomList){
+        Set<Long> uniqueChatNoSet = new HashSet<>(chatRoomList);
+        Query query = new Query(Criteria.where("roomId").in(uniqueChatNoSet));
+        mongoTemplate.remove(query, Chatting.class);
+    }
 }

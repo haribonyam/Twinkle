@@ -14,6 +14,8 @@ public class PayRequestDto implements Serializable {
 
     private Long sellerId;
 
+    private Long tradeBoardId;
+
     private Integer couponMoney;
 
 

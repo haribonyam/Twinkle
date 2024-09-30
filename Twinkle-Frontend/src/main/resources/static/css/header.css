@@ -4,6 +4,7 @@
     height:70px;
     display: flex;
     align-items: center;
+    margin-top :8px;
 }
 .header-bar{
     width:80%;
@@ -12,6 +13,9 @@
     display:flex;
     justify-content: space-between;
     align-items: center;
+}
+.logo{
+    cursor:pointer;
 }
 .header-inout{
     border:1px solid #ccc;

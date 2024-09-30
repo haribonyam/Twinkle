@@ -12,32 +12,31 @@
     <link rel="stylesheet" type="text/css" href="/css/tradeboard.css">
     <link rel="stylesheet" type="text/css" href="/css/chat.css">
     <link rel="stylesheet" type="text/css" href="/css/charge.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
 </head>
 <body>
 <header class="main-header">
     <div class="header-bar">
-        <div onclick="location.href='/'">로고</div>
+        <div onclick="location.href='/'" class="logo"><img src="/icon/logo/Logo-removebg-preview.png"></div>
         <div id="loginButton" class="header-inout" onclick='location.href="/login"'>로그인</div>
     </div>
 </header>
 <nav class="main-menu">
     <ul class="menu-container">
-        <li onclick="navigateToPage('home')">홈</li>
-        <li onclick="navigateToPage('tradeboard')">중고거래</li>
-        <li onclick="navigateToPage('sns')">게시판</li>
-        <li onclick="navigateToPage('my')">내정보</li>
-        <li onclick="navigateToPage('chat')">채팅방</li>
-        <li onclick="openChargeModal()">이전</li>
+        <li onclick="navigateToPage('home')"><img src="/icon/menu/80x50/Home_80x50.png"></li>
+        <li onclick="navigateToPage('tradeboard')"><img src="/icon/menu/80x50/Market_80x50.png"></li>
+        <li onclick="navigateToPage('sns')"><img src="/icon/menu/80x50/SNS_80x50.png"></li>
+        <li onclick="navigateToPage('chat')"><img src="/icon/menu/80x50/Chat_80x50.png"></li>
+        <li onclick="navigateToPage('my')"><img src="/icon/menu/80x50/Mypage_80x50.png"></li>
     </ul>
 </nav>
 <article class="main-view" id="main-view">
     <div class="view-box" id="viewBox">
     </div>
 </article>
-
 <footer class="main-footer">
     <div>
-        푸터 뷰
+        ⓒ haribonyam
     </div>
 </footer>
 
@@ -50,4 +49,6 @@
 <script src="/script/chat.js"></script>
 <script src="/script/tradeboard.js"></script>
 <script src="/script/payment.js"></script>
+<script src="/script/my.js"></script>
+<script src="/script/sns.js"></script>
 </html>

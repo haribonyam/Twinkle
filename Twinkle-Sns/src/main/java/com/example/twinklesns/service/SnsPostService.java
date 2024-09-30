@@ -1,11 +1,16 @@
 package com.example.twinklesns.service;
 
 import com.example.twinklesns.common.exception.ErrorCode;
+import com.example.twinklesns.domain.entity.CommentEntity;
 import com.example.twinklesns.domain.entity.SnsPostEntity;
+import com.example.twinklesns.domain.entity.like.PostLikeEntity;
+import com.example.twinklesns.domain.entity.like.PostLikeId;
 import com.example.twinklesns.dto.request.SnsPostRequestDto;
 import com.example.twinklesns.dto.response.SnsPostResponseDto;
+import com.example.twinklesns.repository.PostLikeRepository;
 import com.example.twinklesns.repository.SnsPost.SnsPostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,10 +23,13 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SnsPostService {
 
     private final SnsPostRepository snsPostRepository;
     private final SnsFileService snsFileService;
+    private final PostLikeRepository postLikeRepository;
+    private final SnsCommentService snsCommentService;
 
     @Transactional
     public Long savePost(SnsPostRequestDto snsPostRequestDto, List<MultipartFile> files) throws IOException {
@@ -43,11 +51,25 @@ public class SnsPostService {
     }
 
     @Transactional
-    public SnsPostResponseDto findById(Long id) {
-        SnsPostEntity snsPost = snsPostRepository.findPostById(id).orElseThrow(ErrorCode::throwSnsPostNotFound);
+    public SnsPostResponseDto findById(Long postId,Long userId){
+        Boolean isLiked = false;
+        log.info("post id : {}",postId);
+        //SnsPostEntity snsPost = snsPostRepository.findById(postId).orElseThrow(ErrorCode::throwSnsPostNotFound);
+        SnsPostEntity snsPost = snsPostRepository.findPostById(postId).orElseThrow(ErrorCode::throwSnsPostNotFound);
+        //List<CommentEntity> comments = snsCommentService.findByPostId(postId);
+        if(userId != null) {
+            PostLikeId postLikeId = PostLikeId.builder()
+                    .postId(postId)
+                    .userId(userId)
+                    .build();
+
+            isLiked = postLikeRepository.existsById(postLikeId);
+        }
         snsPost.viewCountUp();
+
         return SnsPostResponseDto.builder()
                 .snsPostEntity(snsPost)
+                .isLiked(isLiked)
                 .build();
     }
 
@@ -59,8 +81,10 @@ public class SnsPostService {
     }
 
     @Transactional
-    public void deletePost(Long id) {
+    public void deletePost(Long id)
+    {
         snsPostRepository.deleteById(id);
+        postLikeRepository.deleteByPostId(id);
     }
 
     @Transactional
@@ -70,14 +94,27 @@ public class SnsPostService {
     }
 
     @Transactional
-    public void likePost(Long id,String condition) {
-        SnsPostEntity snsPost =snsPostRepository.findById(id).orElseThrow(ErrorCode::throwSnsPostNotFound);
-        if(condition.equals("up")){
-            snsPost.goodCountUp();
-        }
-        if(condition.equals("down")){
+    public Long likePost(Long postId,SnsPostRequestDto snsPostRequestDto) {
+
+        SnsPostEntity snsPost =snsPostRepository.findById(postId).orElseThrow(ErrorCode::throwSnsPostNotFound);
+
+        PostLikeId postLikeId = PostLikeId.builder()
+                .userId(snsPostRequestDto.getMemberId())
+                .postId(postId)
+                .build();
+
+        // 이미 좋아요 했다면 좋아요 취소
+        if (postLikeRepository.existsById(postLikeId)) {
             snsPost.goodCountDown();
+            postLikeRepository.deleteById(postLikeId);
+        }else {
+            snsPost.goodCountUp();
+            postLikeRepository.save(PostLikeEntity.builder()
+                    .id(postLikeId)
+                    .build());
         }
 
+        return postId;
     }
+
 }

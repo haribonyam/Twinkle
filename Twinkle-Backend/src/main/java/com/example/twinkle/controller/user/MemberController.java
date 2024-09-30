@@ -14,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
@@ -68,17 +67,15 @@ public class MemberController {
         return ResponseEntity.ok(nickname);
     }
 
-
-//    @GetMapping("/user/{nickname}")
-//    public ResponseEntity<MemberResponseDto> findByNickname(@PathVariable String nickname){
-//        log.info("approaching user info {}",nickname);
-//        return ResponseEntity.ok(memberService.findByNickname(nickname));
-//    }
-
-    @GetMapping("/user/{username}")
-    public ResponseEntity<MemberResponseDto> findByUsername(@PathVariable String username){
-        log.info("approaching user info {}",username);
-        return ResponseEntity.ok(memberService.findByUsername(username));
+    @GetMapping("/user/{nickname}")
+    public ResponseEntity<MemberResponseDto> findByNickname(@PathVariable String nickname){
+        log.info("approaching user info {}",nickname);
+        return ResponseEntity.ok(memberService.findByNickname(nickname));
     }
 
+    @GetMapping("/service/{username}")
+    public ResponseEntity<MemberResponseDto> findByUsername(@PathVariable String username){
+        log.info("other service reqeust !!");
+        return ResponseEntity.ok(memberService.findByUsername(username));
+    }
 }

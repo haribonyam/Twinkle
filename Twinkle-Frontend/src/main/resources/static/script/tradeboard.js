@@ -1,6 +1,8 @@
 function createTradeBoardWrite(){
     init();
+    scrollTop();
     const viewBox = document.getElementById("viewBox");
+
     viewBox.innerHTML='';
 
     const tradeBoardWriteItem = `
@@ -61,42 +63,43 @@ function handleFiles(files) {
 
     // 미리보기 초기화
     imagePreview.innerHTML = '';
-    if (uploadedImages.length < 5) {
+
+    const fileReaders = uploadedImages.map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.classList.add('upload-placeholder');
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('preview-img');
+                div.appendChild(img);
+                imagePreview.appendChild(div);
+                resolve();
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    Promise.all(fileReaders).then(() => {
+        if (uploadedImages.length < 5) {
             const uploadPlaceholder = document.createElement('div');
             uploadPlaceholder.classList.add('upload-placeholder');
             uploadPlaceholder.onclick = () => document.getElementById('fileInput').click();
             uploadPlaceholder.innerHTML = '<span>이미지를 클릭하여 업로드하세요</span>';
             imagePreview.appendChild(uploadPlaceholder);
         }
-
-    // 이미지 미리보기 생성
-    uploadedImages.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.classList.add('upload-placeholder');
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.classList.add('preview-img');
-            div.appendChild(img);
-            imagePreview.appendChild(div);
-        };
-        reader.readAsDataURL(file);
+            imageCount.textContent = `${uploadedImages.length}/5`;
     });
-
-
-
-    // 이미지 개수 표시 업데이트
-    imageCount.textContent = `${uploadedImages.length}/5`;
 }
 
 async function tradeboardWrite() {
     // 입력된 값 가져오기
+    scrollTop();
     const title = document.getElementById('title').value;
     const category = document.getElementById('category').value;
     const price = document.getElementById('price').value;
     const content = document.getElementById('content').value;
-    const fileInput = document.getElementById('fileInput');
 
     // FormData 객체 생성
     const formData = new FormData();
@@ -114,12 +117,11 @@ async function tradeboardWrite() {
     formData.append('tradeBoardRequestDto', new Blob([JSON.stringify(tradeBoardRequestDto)], { type: 'application/json' }));
 
     // 이미지 파일이 있는 경우 FormData에 추가
-    const files = fileInput.files;
-    for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-    }
+    uploadedImages.forEach(file => {
+          formData.append('files', file);
+      });
 
-    const url = "http://localhost:8080/api/tradeboard/save";
+    const url = "http://localhost:8000/backend/tradeboard/save";
 
     try {
         // 서버로 POST 요청
@@ -150,6 +152,7 @@ async function tradeboardWrite() {
 
 
 function showTradeBoardList() {
+scrollTop();
             isShowTradeBoard=true;
             isLastPage=false;
             const viewBox = document.getElementById('viewBox');
@@ -158,12 +161,12 @@ function showTradeBoardList() {
                 <input type="hidden" id="category">
                 <div class="tradeboard-bar">
                     <div>
-                        <span onclick="setCategory('')">전체</span>
-                        <span onclick="setCategory('화장품')">화장품</span>
-                        <span onclick="setCategory('향수')">향수</span>
-                        <span onclick="setCategory('미용기기')">미용기기</span>
+                        <span onclick="setCategory('')"><img src="/icon/category/전체_60x32.png"></span>
+                        <span onclick="setCategory('화장품')"><img src="/icon/category/화장품_60x32.png"></span>
+                        <span onclick="setCategory('향수')"><img src="/icon/category/향수_60x32.png"></span>
+                        <span onclick="setCategory('미용기기')"><img src="/icon/category/미용기기_60x32.png"></span>
                     </div>
-                    <div onclick="createTradeBoardWrite()">글쓰기</div>
+                    <div onclick="createTradeBoardWrite()"><img src="/icon/category/글쓰기_60x32.png"></div>
                 </div>
                 <div id="grid-container" class="grid-container"></div>
             `;
@@ -187,7 +190,7 @@ function showTradeBoardList() {
             if (category !== undefined && category !== '') {
                 param.append("category", category);
             }
-            const url = `http://localhost:8080/api/tradeboard/list?${param.toString()}`;
+            const url = `http://localhost:8000/backend/tradeboard/list?${param.toString()}`;
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -223,7 +226,7 @@ function showTradeBoardList() {
                gridItem.setAttribute('onclick', `showTradeBoardInfo(${content.id})`);
 
                const img = document.createElement("img");
-               //img.src = content.paths !== null && content.paths.length > 0 ? content.paths[0] : '';
+               img.src = content.paths !== null && content.paths.length > 0 ? 'http://localhost:8080'+content.paths[0] : '';
 
                const itemInfo = document.createElement("div");
                itemInfo.className = "item-info";
@@ -232,7 +235,7 @@ function showTradeBoardList() {
                const info = `
                    <h2>${content.title}</h2>
                    <p class="condition">${content.condition}</p>
-                   <p class="price">${content.price}원</p>
+                   <p class="price">${content.price.toLocaleString()}원</p>
                    <p class="date">${date}</p>
                `;
                itemInfo.innerHTML = info;
@@ -291,7 +294,7 @@ function showTradeBoardList() {
         /* tradeboard info*/
        async function showTradeBoardInfo(id) {
            removeScrollEvent();
-           const url = "http://localhost:8080/api/tradeboard/"+id;
+           const url = "http://localhost:8000/backend/tradeboard/"+id;
            try{
            const response = await fetch(url,{
               headers:{
@@ -325,8 +328,10 @@ function showTradeBoardList() {
        }
 
        function createTradeBoardInfo(data){
+            scrollTop();
 
             const viewBox = document.getElementById('viewBox');
+
             viewBox.innerHTML ='';
             var productDetailHTML = `
                 <div class="product-detail">
@@ -338,7 +343,7 @@ function showTradeBoardList() {
                         <span class="view-count">${data.view}</span>
                     </div>
                     <div class="product-images">
-                        ${data.paths.map(img => `<img src="${img}" alt="Product Image" onclick="openModal('${img}')">`).join('')}
+                        ${data.paths.map(img => `<img src="http://localhost:8080${img}${img}" alt="Product Image" onclick="openModal('http://localhost:8080${img}')">`).join('')}
                     </div>
                     <div class="product-description">
                         <p>${data.content}</p>
@@ -362,19 +367,40 @@ function showTradeBoardList() {
                                         <span class="view-count">${data.view}</span>
                                     </div>
                                     <div class="product-images">
-                                        ${data.paths.map(img => `<img src="${img}" alt="Product Image" onclick="openModal('${img}')">`).join('')}
+                                        ${data.paths.map(img => `<img src="http://localhost:8080${img}" alt="Product Image" onclick="openModal('http://localhost:8080${img}')">`).join('')}
                                     </div>
                                     <div class="product-description">
                                         <p>${data.content}</p>
                                     </div>
-
+                                    <div class="tradeboard-delete" onclick=deletePost(${data.id})></div>
                                 </div>
                                 <div id="imageModal" class="modal" onclick="imageCloseModal()">
                                         <span class="close">&times;</span>
                                         <img class="modal-content" id="modalImage">
                                 </div>`
 
-            }
+           }else if(data.condition === "판매완료"){
+             productDetailHTML=`
+             <div class="product-detail">
+                 <h1 class="product-title">${data.title}</h1>
+                 <p class="product-price">${data.price.toLocaleString()}원</p>
+                 <p class="product-seller">${data.nickname}</p>
+                 <div class="product-view-info">
+                      <span class="view-icon">👁️</span>
+                      <span class="view-count">${data.view}</span>
+                 </div>
+                 <div class="product-images">
+                    ${data.paths.map(img => `<img src="http://localhost:8080${img}" alt="Product Image" onclick="openModal('http://locahlost:8080${img}')">`).join('')}
+                 </div>
+                 <div class="product-description">
+                    <p>${data.content}</p>
+                 </div>
+           </div>
+           <div id="imageModal" class="modal" onclick="imageCloseModal()">
+                 <span class="close">&times;</span>
+                <img class="modal-content" id="modalImage">
+           </div>`
+           }
 
             viewBox.innerHTML = productDetailHTML;
        }
@@ -387,6 +413,29 @@ function showTradeBoardList() {
 
        }
 
-       function isBuyer(){
+async function deletePost(id) {
+    if(!confirm("게시글을 삭제하시겠습니까?")){
+        return;
+    }
+    const url = `http://localhost:8000/backend/tradeboard/${id}`;
 
-       }
+    try {
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Authorization": accessToken
+            }
+        });
+
+        if (response.status === 204) {
+            alert("게시글이 삭제되었습니다.");
+            navigateToPage('tradeboard');
+        } else {
+            alert("서버에 문제가 발생했습니다. 나중에 다시 시도해 주세요.");
+        }
+    } catch (error) {
+        console.error("삭제 요청 중 오류 발생:", error);
+        alert("서버와의 연결에 문제가 발생했습니다. 나중에 다시 시도해 주세요.");
+    }
+}
+

@@ -69,9 +69,9 @@ public class MemberService {
         MemberEntity member = memberRepository.findByNickname(nickname).orElseThrow(ErrorCode::throwMemberNotFound);
         return new MemberResponseDto(member);
     }
-
-    public String findnickname(Long id) {
-        return memberRepository.findById(id).get().getNickname();
+    public MemberResponseDto findByUsername(String username){
+        MemberEntity member = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);
+        return new MemberResponseDto(member);
     }
 
     /***
@@ -99,8 +99,8 @@ public class MemberService {
         return null; }
 
 
-    public MemberResponseDto findByUsername(String username) {
-       MemberEntity member = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);
-       return new MemberResponseDto(member);
+    public MemberResponseDto findByUserName(String username) {
+        MemberEntity member = memberRepository.findByUsername(username).orElseThrow(ErrorCode::throwMemberNotFound);
+        return new MemberResponseDto(member);
     }
 }

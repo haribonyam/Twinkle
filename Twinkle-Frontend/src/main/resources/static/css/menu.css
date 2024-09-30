@@ -2,7 +2,6 @@
     margin:0 auto;
     width:80%;
     height:80px;
-    background-color: #ccc;
 }
 .menu-container{
     margin:0 auto;
@@ -16,12 +15,15 @@
 .menu-container li{
     width:80px;
     text-align: center;
-    border:1px solid black;
+
     border-radius: 5px;
-    padding:15px 0 ;
+    padding :3px;
     cursor: pointer;
     font-size:13px;
     font-weight: bold;
+}
+.menu-container li img{
+    object-fit :cover;
 }
 .menu-container li:hover{
     background-color: white;

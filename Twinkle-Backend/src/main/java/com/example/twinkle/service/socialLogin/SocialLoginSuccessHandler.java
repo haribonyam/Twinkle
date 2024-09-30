@@ -59,7 +59,7 @@ public class SocialLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);
         //cookie.setSecure(true);
-        cookie.setPath("/social");
+        cookie.setPath("/");
         cookie.setHttpOnly(false);
 
         return cookie;

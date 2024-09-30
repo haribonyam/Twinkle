@@ -24,6 +24,7 @@
 
     async function sendCookiesToBackend() {
     const cookies = getAllCookies();
+    console.log(cookies);
     const requestOptions = {
         method: 'POST',
         headers: {
@@ -33,24 +34,23 @@
     };
 
     try {
-            const response = await fetch('http://localhost:8080/social', requestOptions);
+            const response = await fetch('http://localhost:8000/backend/social', requestOptions);
             if (response.ok) {
                 alert('로그인 성공!');
                 const responseBody = await response.json();
+                console.log(responseBody);
 
                 // jwtToken을 localStorage에 저장
                 const jwtToken = responseBody.jwtToken;
-                alert(jwtToken);
+
                 localStorage.setItem('jwtToken', jwtToken);
 
                 // nickname을 localStorage에 저장
                 const nickname = responseBody.nickname;
-                alert(nickname);
                 localStorage.setItem('nickname', nickname);
 
                 // id를 localStorage에 저장
                 const id = responseBody.id;
-                alert(id);
                 localStorage.setItem('id', id);
 
                 // 쿠키 삭제 로직 추가

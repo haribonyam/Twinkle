@@ -28,8 +28,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        log.info("attempt login pro!");
         String username = obtainUsername(request);
         String password = obtainPassword(request);
+        log.info("id : {}",username);
+        log.info("password : {}",password);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username,password, null);
         return authenticationManager.authenticate(authToken);
     }

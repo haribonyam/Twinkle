@@ -29,7 +29,7 @@ async function loginPro(username, password) {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("password", password);
-    const url = "http://localhost:8080/login";
+    const url = "http://localhost:8000/backend/login";
 
     try {
         const response = await fetch(url, {
@@ -43,14 +43,16 @@ async function loginPro(username, password) {
         }
 
         if (!response.ok) {
-            alert('네트워크에 오류가 발생했습니다. 잠시후 다시 시도해 주세요.');
+            alert('네트워크에 오류가 발생했습니다. 잠시후 다시 시도해 주세요.11');
             return;
         }
 
         const token = response.headers.get('Authorization');
         const nickname = response.headers.get('Nickname');
         const id = response.headers.get('Id');
-
+        console.log(token);
+        console.log(nickname);
+        console.log(id);
         if (token) {
             localStorage.setItem('jwtToken', token);
             localStorage.setItem('nickname', nickname);
@@ -58,7 +60,7 @@ async function loginPro(username, password) {
             alert('로그인이 완료되었습니다.');
             window.location.href = "/";
         } else {
-            alert('네트워크에 문제가 발생했습니다. 잠시후 다시 시도해주세요.');
+            alert('네트워크에 문제가 발생했습니다. 잠시후 다시 시도해주세요.22');
         }
     } catch (error) {
         console.error('로그인 중 오류 발생:', error);

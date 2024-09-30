@@ -21,5 +21,6 @@ public class TradeBoardResponseDto {
     private Integer view;
     private Integer price;
     private List<String> paths;
+    private Long buyer;
 
 }

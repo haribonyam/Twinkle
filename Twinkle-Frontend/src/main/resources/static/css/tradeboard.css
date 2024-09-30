@@ -5,7 +5,6 @@
     justify-content: space-between;
     height:40px;
     align-items: center;
-    background-color: #ccc;
 }
 .tradeboard-bar div{
     box-sizing: border-box;
@@ -19,16 +18,12 @@
 }
 .tradeboard-bar div:nth-child(1) span{
     cursor: pointer;
-    border: 1px solid black;
     border-radius: 5px;
-    padding :5px;
 }
 .tradeboard-bar div:nth-child(1) span:hover{
     opacity: 0.3;
 }
 .tradeboard-bar div:nth-child(2){
-    padding:5px;
-    border: 1px solid black;
     width:60px;
     text-align: center;
     border-radius: 5px;
@@ -408,6 +403,24 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-top: 10px;
+}
+.tradeboard-delete{
+    width:90px;
+    height:30px;
+    border:1px solid #ccc;
+    border-radius :8px;
+    color:red;
+    cursor:pointer;
+    text-align:center;
+    line-height:30px;
+}
+.tradeboard-delete:before{
+    content:"글삭제";
+    font-size:13px;
+    font-weight:bolder;
+}
+.tradeboard-delete:hover{
+    opacity:0.3;
 }
 
 .tradeboard-button:hover {

@@ -7,10 +7,13 @@
 //let isConnect = false;
 
 async function startChat(tradeBoardId) {
-    const url = `http://localhost:8082/room/${tradeBoardId}`;
+    if(!validation()){
+     return showToast("로그인이 필요한 서비스 입니다.");
+    }
+    const url = `http://localhost:8000/chat/room/${tradeBoardId}`;
         const response = await fetch(url, {
             headers: {
-                "Authorization": localStorage.getItem("jwtToken"),
+                "Authorization": accessToken,
                 "Content-Type": "application/json"
             }
         });
@@ -23,7 +26,8 @@ async function startChat(tradeBoardId) {
         }
 
         if (!response.ok) {
-            if (data.errorCodeName === "013") {
+            if (data.errorCodeName === '013') {
+
                 return createChatRoom(tradeBoardId);
             } else {
                 return alert("서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
@@ -36,7 +40,7 @@ async function createChatRoom(tradeBoardId) {
         return unauthorized();
     }
 
-    const url = `http://localhost:8082/room?id=${tradeBoardId}`;
+    const url = `http://localhost:8000/chat/room?id=${tradeBoardId}`;
     const body = {
         nickname: username,
         memberId: userId   // ChatRequestDto의 memberId 필드
@@ -59,7 +63,8 @@ async function createChatRoom(tradeBoardId) {
         if (!response.ok) {
             return alert("서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
         }
-        enterRoom(data.roomId);
+
+        return await enterRoom(data.data.roomId);
 
     } catch (error) {
         console.error("Error:", error);
@@ -69,42 +74,35 @@ async function createChatRoom(tradeBoardId) {
 
 // 채팅방 리스트 가져오기
 async function showChatList() {
-    const token = localStorage.getItem("jwtToken");
-    const url = "http://localhost:8082/room";
-
-    try {
-        let response = await fetch(url, {
+    const url = "http://localhost:8000/chat/room";
+    const response = await fetch(url, {
             headers: {
-                'Authorization': token, // Bearer 접두사 추가
+                'Authorization': accessToken, // Bearer 접두사 추가
                 'Content-Type': 'application/json'
             }
         });
         if (response.status === 401) {
             await refreshToken();
-            return chatList();
+            return showChatList();
         }
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-      }
         const data = await response.json();
+        console.log(data);
+        if (!response.ok) {
+          return notFound(data.message);
+         }
         populateChatList(data);
-
-    } catch (error) {
-        console.error('Error fetching chat list:', error);
-    }
 }
 
 /*채팅방 입장*/
 async function enterRoom(roomId) {
+    room = roomId;
     if(stompClient !== null){
         disconnect();
     }
-    const url = 'http://localhost:8082/chat/' + roomId;
-    const token = localStorage.getItem("jwtToken");
-    try{
-       let response = await fetch(url,{
+    const url = 'http://localhost:8000/chat/' + roomId;
+    const response = await fetch(url,{
         headers:{
-            'Authorization': token,
+            'Authorization': accessToken,
             'Content-Type':'application/json'
         }
        })
@@ -114,14 +112,13 @@ async function enterRoom(roomId) {
            return enterRoom(roomId);
        }
         const data = await response.json();
+        console.log(data);
         populateChatRoom(data);
         if(data.chattings != null){
             createMessageHistory(data.chattings);
         }
         connect();
-    } catch (error) {
-       console.error('Error fetching chat list:', error);
-    }
+
 }
 
 function populateChatList(roomData) {
@@ -129,7 +126,6 @@ function populateChatList(roomData) {
 
     const viewBox = document.querySelector('.view-box');
     viewBox.innerHTML = '';
-
     const ul = document.createElement('ul');
     ul.classList.add('chat-list');
 
@@ -142,11 +138,15 @@ function populateChatList(roomData) {
 }
 
 function createChatItem(data, myNickname) {
+    console.log(data);
     const li = document.createElement('li');
     li.onclick = () => enterRoom(data.roomId);
 
     const thumbNail = document.createElement('div');
-    thumbNail.textContent = data.thumbNail;
+    const img = document.createElement('img');
+    img.src = "http://localhost:8080"+data.thumbNail;
+    img.classList.add("thumbNail");
+    thumbNail.appendChild(img);
 
     const info = document.createElement('div');
     info.textContent = (myNickname === data.nickname) ? data.roomName : data.nickname;
@@ -161,17 +161,27 @@ function createChatItem(data, myNickname) {
 }
 
 function populateChatRoom(data) {
+    console.log(data);
     const tradeBoard = data.tradeBoard;
-    roomId = data.roomId;
-    tradeBoardId = tradeBoard.id;
+    roomId = data.roomId; //global
+    tradeBoardId = tradeBoard.id; //global
     const viewBox = document.querySelector(".view-box");
     viewBox.innerHTML = '';
+    const roomData = JSON.stringify(data);
 
     const ul = document.createElement('ul');
     ul.classList.add('chat-room');
+    let scheduleOrPayment = "notPayOrSchedule";
+    if (tradeBoard.condition === "판매중" && Number(tradeBoard.memberId) === Number(userId)) {
+        scheduleOrPayment = "schedule";
+    } else if (tradeBoard.condition === "예약중" && Number(tradeBoard.buyer) === Number(userId)) {
+        scheduleOrPayment = "payment";
+    }
+
     const tradeBoardItem=`
+    <input type="hidden" id="roomId" value="${roomId}">
     <div class="chat-tradeboard" onclick="showTradeBoardInfo(${tradeBoardId})">
-                    <div><img></img></div>
+                    <div class="tradeBoardThumbNail"><img class="thumbNail" src="http://localhost:8080${tradeBoard.paths[0]}"></img></div>
                     <div class="info">
                         <h4 class="h-title">${tradeBoard.title}</h4>
                         <h5 class="h-price">${tradeBoard.price}원</h4>
@@ -179,8 +189,12 @@ function populateChatRoom(data) {
                     <div class="condition">
                         ${tradeBoard.condition}
                     </div>
-                    <div class="schedule" id="payOrSchedule" onclick="navigateToAction(this)"></div>
-
+    </div>
+    <div class="chat-schedule">
+    <div class="${scheduleOrPayment}" id="payOrSchedule" onclick='navigateToAction(this, ${roomData})'>
+     ${scheduleOrPayment === 'schedule' ? '약속잡기' : '반짝페이'}
+    </div>
+    </div>
     `;
 
     const inputChat = `
@@ -233,20 +247,29 @@ function dateDifference(date) {
         return `${dayDifference}일 전`;
     }
 }
-
 // stomp connect & pub/sub
 function connect() {
+    if(connectCount > 3 ){
+        alert("서버에 문제가 생겼습니다.")
+        return;
+    }
     var socket = new SockJS('http://localhost:8082/ws-stomp');
     stompClient = Stomp.over(socket);
     stompClient.connect({ Authorization: accessToken }, onConnected, onError);
 }
 
 function onConnected() {
-    stompClient.subscribe('/sub/' + roomId, onMessageReceived);
+    stompClient.subscribe('/sub/' + roomId, onMessageReceived,{Authorization : accessToken});
 }
-
+let connectCount =0;
 function onError(error) {
-    console.error('Could not connect to WebSocket server. Please refresh this page to try again!', error);
+    console.log(error.body);
+    connectCount++;
+    if(refreshToken()){
+    setTimeout(function() {
+        enterRoom(room);
+    }, 1000);
+    }
 }
 
 function sendMessage(event) {
@@ -262,15 +285,36 @@ function sendMessage(event) {
             tradeBoardId: tradeBoardId,
             roomId: roomId
         };
+    try{
         stompClient.send("/pub/" + roomId, { Authorization: accessToken }, JSON.stringify(chatMessage));
         saveMessage(chatMessage);
         messageInput.value = '';
+    }catch(error){
+        console.log(error);
+    }
     }
 }
+
+function sendAppointment(){
+     var senderId = localStorage.getItem("id");
+     var username = localStorage.getItem("nickname");
+        if (stompClient) {
+            var chatMessage = {
+                sender: username,
+                content: "appointment-complete",
+                senderId: senderId,
+                tradeBoardId: tradeBoardId,
+                roomId: roomId
+            };
+            stompClient.send("/pub/" + roomId, { Authorization: accessToken }, JSON.stringify(chatMessage));
+            messageInput.value = '';
+        }
+}
+
 var reTryCount=0;
 
 async function saveMessage(message) {
-    const url = "http://localhost:8082/chat";
+    const url = "http://localhost:8000/chat";
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -342,6 +386,11 @@ function createMessageHistory(chattings){
 function onMessageReceived(payload) {
     const message = JSON.parse(payload.body);
     const messageArea = document.querySelector('.chat-room');
+    if(message.content === "appointment-complete"){
+        enterRoom(message.roomId);
+        return;
+    }
+
     if(message.sender!=username && message.sender != senderTemp){
           const nicknameElement = document.createElement('li');
           nicknameElement.className='message';
@@ -375,11 +424,44 @@ function disconnect(){
         }
 }
 
-function navigateToAction(element){
-        const text = element.textContent.trim();
-        if(text === "약속잡기"){
-            console.log("약속잡기 핸들링");
-        }else{
-            console.log("페이결제 핸들링");
+function navigateToAction(element,data) {
+    const memberId = data.createMember;
+    const roomId = data.roomId;
+    const tradeBoardId = data.tradeBoard.id;
+    const text = element.innerText.trim();
+
+    if (text === "약속잡기") {
+        if (confirm("약속을 잡으시겠습니까?")) {
+            schedule(memberId,tradeBoardId,roomId);
+        }
+    } else if (text === "반짝페이") {
+        if (confirm("반짝페이로 결제하시겠습니까?")) {
+            openPaymentModal(data.tradeBoard.price,data.tradeBoard.memberId,tradeBoardId);
         }
     }
+}
+
+async function schedule(buyerId, tradeBoardId, roomId) {
+    const url = "http://localhost:8080/api/tradeboard/request/"+tradeBoardId;
+
+    try {
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Authorization": accessToken,
+                "Content-Type": "application/json"
+            },
+            body:JSON.stringify(buyerId)
+        });
+
+        if (response.ok) {
+            console.log("appointment success!!");
+            sendAppointment();
+        } else {
+            console.log("Request failed with status: " + response.status);
+        }
+    } catch (e) {
+        console.log("error: " + e);
+    }
+    enterRoom(roomId);
+}

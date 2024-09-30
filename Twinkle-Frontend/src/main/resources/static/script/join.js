@@ -10,7 +10,7 @@ function joinPro() {
     };
 
     // 서버로 데이터를 전송
-    fetch('http://localhost:8080/api/user/save', {
+    fetch('http://localhost:8000/backend/user/save', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -30,7 +30,7 @@ function joinPro() {
 }
 
 function joinCheck(type){
- const baseUri = "http://localhost:8080/api/user/check/" + type;
+ const baseUri = "http://localhost:8000/backend/user/check/" + type;
  const param = document.getElementById(type).value;
  const params = new URLSearchParams();
  params.append(type,param);
@@ -68,7 +68,7 @@ function joinCheck(type){
 var code = null;
 
 function sendEmail(email) {
-    const url = "http://localhost:8080/mailConfirm";
+    const url = "http://localhost:8000/backend/mailConfirm";
     const body = JSON.stringify({
         "email": email
     });
@@ -82,7 +82,7 @@ function sendEmail(email) {
     })
     .then(async response => {
         if (!response.ok) {
-            alert("네트워크 문제로 메일 전송에 실패했습니다.123123");
+            alert("네트워크 문제로 메일 전송에 실패했습니다.");
             return;
         }
         const data = await response.json();

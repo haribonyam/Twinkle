@@ -25,6 +25,7 @@ public class FileService {
 
     @Transactional
     public List<FileEntity> saveFile(List<MultipartFile> files, TradeBoardEntity tradeBoardEntity) {
+
         List<FileEntity> fileEntities = new ArrayList<>();
 
         for(MultipartFile file : files){
@@ -41,17 +42,17 @@ public class FileService {
     }
 
     public FileEntity setFile(MultipartFile file, TradeBoardEntity tradeBoard){
-        String fileName = FileUtil.getCreateRandomName();
-        String path = FileUtil.getFilePath(file,fileName);
+        String fileName = FileUtil.getRandFileName(file);
+        String path = FileUtil.getFilePath(fileName);
         File saveFile = new File(path);
        try {
            file.transferTo(saveFile);
        }catch(IOException e){
-           log.info("file Exception");
+           log.info("file Exception ");
        }
         return FileEntity.builder()
                 .name(fileName)
-                .path(path)
+                .path("/file/"+fileName)
                 .tradeBoardEntity(tradeBoard)
                 .build();
     }

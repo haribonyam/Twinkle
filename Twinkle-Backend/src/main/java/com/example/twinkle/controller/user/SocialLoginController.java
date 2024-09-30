@@ -26,7 +26,9 @@ public class SocialLoginController {
             if (cookie.getValue() == null) {
                 return ResponseEntity.badRequest().body("No Cookie found");
             }
-            switch (cookie.getName()) {
+            String n = cookie.getName();
+            log.info("Cookie name : {}",n);
+            switch (n) {
                 case "Authorization":
                     token += cookie.getValue();
                     break;
@@ -38,6 +40,9 @@ public class SocialLoginController {
                     break;
             }
         }
+        log.info("social token : {}",token);
+        log.info("social nickname : {}",nickname);
+        log.info("social id : {}",id);
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("jwtToken", token);
