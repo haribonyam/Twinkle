@@ -1,0 +1,160 @@
+      .modal-overlay {
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  background-color: rgba(0, 0, 0, 0.5);
+                  display: block; /* 기본적으로 숨김 */
+                  justify-content: center;
+                  align-items: center;
+                  z-index: 1000; /* 모달보다 아래에 위치 */
+              }
+
+      .charge-modal {
+                  background-color: #ffffff;
+                  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+                  width: 400px;
+                  padding: 20px;
+                  text-align: center;
+                  border-radius: 12px;
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  z-index: 1001;
+        }
+
+        .charge-modal-item {
+            margin-top: 18px;
+        }
+
+        .charge-modal-item input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .charge-modal-item input::placeholder {
+            color: #aaa;
+        }
+
+        .charge-modal-item input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .charge-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .kakao-pay {
+            cursor: pointer;
+            width: auto;
+            height: auto;
+            margin-top: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .kakao-pay:hover {
+            transform: scale(1.05);
+        }
+        .close-charge-modal{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-charge-modal:hover {
+            background-color: #e0e0e0;
+        }
+
+        .close-charge-modal:before {
+            content: "×";
+            font-size: 20px;
+            color: #333;
+        }
+
+
+
+
+/*페이머니 결제*/
+      .payment-modal {
+                  background-color: #ffffff;
+                  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+                  width: 400px;
+                  padding: 20px;
+                  text-align: center;
+                  border-radius: 12px;
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  z-index: 1001;
+        }
+
+        .payment-modal-item {
+            margin-top: 18px;
+        }
+
+        .payment-modal-item input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .payment-modal-item input::placeholder {
+            color: #aaa;
+        }
+
+        .payment-modal-item input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .payment-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .close-payment-modal{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+       .payment-modal-modal:hover {
+            background-color: #e0e0e0;
+        }
+
+        .close-payment-modal:before {
+            content: "×";
+            font-size: 20px;
+            color: #333;
+        }

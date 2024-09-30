@@ -1,0 +1,31 @@
+.main-header{
+    width:100%;
+    background-color: white;
+    height:70px;
+    display: flex;
+    align-items: center;
+    margin-top :8px;
+}
+.header-bar{
+    width:80%;
+    height:inherit;
+    margin:0 auto;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo{
+    cursor:pointer;
+}
+.header-inout{
+    border:1px solid #ccc;
+    padding:5px;
+    border-radius: 5px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:bold;
+}
+.header-inout:hover{
+    background-color: #ccc;
+}
+

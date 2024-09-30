@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인페이지</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/menu.css">
+    <link rel="stylesheet" type="text/css" href="/css/view.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="/css/tradeboard.css">
+    <link rel="stylesheet" type="text/css" href="/css/chat.css">
+    <link rel="stylesheet" type="text/css" href="/css/charge.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+</head>
+<body>
+<header class="main-header">
+    <div class="header-bar">
+        <div onclick="location.href='/'" class="logo"><img src="/icon/logo/Logo-removebg-preview.png"></div>
+        <div id="loginButton" class="header-inout" onclick='location.href="/login"'>로그인</div>
+    </div>
+</header>
+<nav class="main-menu">
+    <ul class="menu-container">
+        <li onclick="navigateToPage('home')"><img src="/icon/menu/80x50/Home_80x50.png"></li>
+        <li onclick="navigateToPage('tradeboard')"><img src="/icon/menu/80x50/Market_80x50.png"></li>
+        <li onclick="navigateToPage('sns')"><img src="/icon/menu/80x50/SNS_80x50.png"></li>
+        <li onclick="navigateToPage('chat')"><img src="/icon/menu/80x50/Chat_80x50.png"></li>
+        <li onclick="navigateToPage('my')"><img src="/icon/menu/80x50/Mypage_80x50.png"></li>
+    </ul>
+</nav>
+<article class="main-view" id="main-view">
+    <div class="view-box" id="viewBox">
+    </div>
+</article>
+<footer class="main-footer">
+    <div>
+        ⓒ haribonyam
+    </div>
+</footer>
+
+</body>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="/script/common.js"></script>
+<script src="/script/main.js"></script>
+<script src="/script/chat.js"></script>
+<script src="/script/tradeboard.js"></script>
+<script src="/script/payment.js"></script>
+<script src="/script/my.js"></script>
+<script src="/script/sns.js"></script>
+</html>
