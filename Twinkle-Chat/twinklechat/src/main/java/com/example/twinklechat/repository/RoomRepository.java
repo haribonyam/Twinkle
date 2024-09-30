@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface RoomRepository extends JpaRepository<RoomEntity,Long> {
 
-    @Query("SELECT r FROM RoomEntity r WHERE r.createMemberId = :memberId OR r.joinMemberId = :memberId")
+    @Query("SELECT r FROM RoomEntity r WHERE r.createMemberId = :memberId OR r.joinMemberId = :memberId ORDER BY r.createdDate DESC")
     List<RoomEntity> findAllByMemberId(@Param("memberId") Long memberId);
 
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END "+
@@ -23,4 +23,8 @@ public interface RoomRepository extends JpaRepository<RoomEntity,Long> {
 
     @Query("SELECT r FROM RoomEntity r WHERE r.tradeBoardId = :tradeBoardId AND (r.createMemberId = :memberId OR r.joinMemberId = :memberId)")
     Optional<RoomEntity> findByTradeBoardIdAndMemberId(@Param("tradeBoardId") Long tradeBoardId, @Param("memberId") Long memberId);
+
+    List<RoomEntity> findAllByTradeBoardId(Long tradeBoardId);
+
+    List<RoomEntity> findByTradeBoardId(Long tradeBoardId);
 }

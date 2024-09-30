@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 public class TradeBoardController {
@@ -33,6 +33,7 @@ public class TradeBoardController {
     @PostMapping("/tradeboard/save")
     public ResponseEntity<Long> TradeBoardPostSave(@RequestPart TradeBoardRequestDto tradeBoardRequestDto,@RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         log.info("tradeboard save pro");
+
         Long id = tradeBoardService.saveTradeBoardPost(tradeBoardRequestDto,files);
         return ResponseEntity.ok().body(id);
     }
@@ -64,13 +65,17 @@ public class TradeBoardController {
      * @param pageable
      */
     @GetMapping("/tradeboard/list")
-    public ResponseEntity<Page<TradeBoardResponseDto>> TradeBoardAll(
+    public ResponseEntity<Page<TradeBoardResponseDto>> tradeBoardAll(
             @PageableDefault(size=12, sort="id", direction=Sort.Direction.DESC)Pageable pageable,
             @RequestParam(required = false, defaultValue = "") Map<String,String> searchCondition){
 
         Page<TradeBoardResponseDto> tradeBoardResponseDtos = tradeBoardService.tradeBoardAllList(pageable,searchCondition);
 
         return ResponseEntity.ok(tradeBoardResponseDtos);
+    }
+    @GetMapping("tradeboard/list/{nickname}")
+    public ResponseEntity<List<TradeBoardResponseDto>> tradeBoardMy(@PathVariable("nickname") String nickname){
+        return ResponseEntity.ok(tradeBoardService.findAllByNickname(nickname));
     }
 
     /***
@@ -82,10 +87,13 @@ public class TradeBoardController {
         return ResponseEntity.ok(tradeBoardService.findById(id));
     }
 
-    @GetMapping("/tradeboard/request/{id}")
-    public ResponseEntity<Long> RequestTrade(@PathVariable Long tradeBoardId, @RequestParam Long buyerId){
+    @PutMapping("/tradeboard/request/{id}")
+    public ResponseEntity<HttpStatus> RequestTrade(@PathVariable Long id, @RequestBody Long buyerId){
+        log.info("buyer id : {}",buyerId);
+        log.info("tradeBoard id : {}",id);
+        tradeBoardService.requestTrade(id,buyerId);
 
-        return ResponseEntity.ok(tradeBoardService.requestTrade(tradeBoardId,buyerId));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
 }

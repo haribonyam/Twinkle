@@ -6,6 +6,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -20,49 +21,54 @@ public class StompHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        log.info("Opening STOMP Socket");
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // StompCommand에 따라 분기해서 로직 구현.
 
-        if(StompCommand.CONNECT == accessor.getCommand()) {
-            log.info("connect pro");
-
+      //  if(StompCommand.CONNECT == accessor.getCommand()) {
             String accessToken = getAccessToken(accessor);
             if (accessToken == null) {
-                log.info("토큰 없어유");
-                throw new IllegalArgumentException("Authorization token is null");
-                //Exception 처리해야함
+
+                throw new MessageDeliveryException("Authorization token is null");
             }
-            /*
+
             if (isExpired(accessToken)) {
-                //Exception 처리해야함
-                throw new IllegalArgumentException("Authorization token is expired");
+                throw new MessageDeliveryException("Authorization token is expired");
             }
-            */
+
             String username = getUsername(accessToken);
-            System.out.println(username);
-            log.info("StompAccessor = {}", username);
-        }
+
+        //}
+/*
+        if(StompCommand.SEND == accessor.getCommand()){
+            log.info("message send pro");
+            String accessToken = getAccessToken(accessor);
+            if (accessToken == null) {
+
+                throw new MessageDeliveryException("Authorization token is null");
+            }
+
+            if (!isExpired(accessToken)) {
+                throw new MessageDeliveryException("Authorization token is expired");
+            }
+       }*/
         return message;
     }
 
 
 
     private String getUsername(String accessToken) {
-        log.info("getUsername ing");
        String username= jwtHandler.getUserName(accessToken);
-       log.info("username :: {}",username);
        return username;
     }
 
 
     private boolean isExpired(String accessToken) {
-        log.info("isExpired ing");
         return jwtHandler.isExpired(accessToken);
     }
 
     public String getAccessToken(StompHeaderAccessor accessor){
         String token = accessor.getFirstNativeHeader("Authorization");
-        log.info("token = {}",token);
         return token;
     }
 }

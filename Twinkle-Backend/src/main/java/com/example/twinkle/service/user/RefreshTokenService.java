@@ -35,7 +35,7 @@ public class RefreshTokenService {
     @Transactional
     public String republishAccessToken(String access){
 
-        log.info("jwt token refresh ing");
+        log.info("jwt token refresh ing : {}",access);
         Optional<RefreshToken> refresh = refreshTokenRepository.findByAccessToken(access);
 
         if(refresh.isPresent() && !jwtUtil.isExpired(refresh.get().getRefreshToken())){
@@ -48,7 +48,7 @@ public class RefreshTokenService {
 
             refreshToken.updateAccessToken(newAccessToken);
 
-            log.info("access token is expired & new token is published");
+            log.info("access token is expired & new token is published :: {}",newAccessToken);
             return newAccessToken;
         }
         log.info("jwt refresh fail...");

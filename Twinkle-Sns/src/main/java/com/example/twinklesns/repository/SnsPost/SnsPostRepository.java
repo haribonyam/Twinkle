@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface SnsPostRepository extends JpaRepository<SnsPostEntity,Long>,CustomSnsPostRepository {
 
-    @Query("SELECT p FROM SnsPostEntity p JOIN FETCH p.files WHERE p.id = :id")
+    @Query("SELECT p FROM SnsPostEntity p LEFT JOIN FETCH p.files WHERE p.id = :id")
     Optional<SnsPostEntity> findPostById(@Param("id") Long id);
+
 }

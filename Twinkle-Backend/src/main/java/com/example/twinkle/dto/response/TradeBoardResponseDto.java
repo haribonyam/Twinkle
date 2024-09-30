@@ -31,8 +31,9 @@ public class TradeBoardResponseDto {
         private Integer view;
         private Integer price;
         private List<String> paths;
+        private Long buyer;
 
-        public TradeBoardResponseDto(Long id, Long memberId, String nickname, String title, String content, Condition condition, LocalDateTime createdDate,LocalDateTime updatedDate,String category,Integer view,Integer price, List<String> paths){
+        public TradeBoardResponseDto(Long id, Long memberId, String nickname, String title, String content, Condition condition, LocalDateTime createdDate,LocalDateTime updatedDate,String category,Integer view,Integer price, List<String> paths,Long buyer){
             this.id = id;
             this.memberId= memberId;
             this.nickname=nickname;
@@ -45,17 +46,16 @@ public class TradeBoardResponseDto {
             this.view = view;
             this.price=price;
             this.paths=paths;
-
+            this.buyer=buyer;
         }
 
         public static TradeBoardResponseDto toDto(TradeBoardEntity tradeBoardEntity){
 
             List<String> paths = tradeBoardEntity.getFiles().stream().map(image -> image.getPath()).collect(Collectors.toList());
-
             return new TradeBoardResponseDto(tradeBoardEntity.getId(),tradeBoardEntity.getMember().getId(),
                     tradeBoardEntity.getNickname(), tradeBoardEntity.getTitle(),tradeBoardEntity.getContent(),
                     tradeBoardEntity.getCondition(),tradeBoardEntity.getCreatedDate(),tradeBoardEntity.getUpdatedDate(),
-                    tradeBoardEntity.getCategory(), tradeBoardEntity.getView(), tradeBoardEntity.getPrice(),paths);
+                    tradeBoardEntity.getCategory(), tradeBoardEntity.getView(), tradeBoardEntity.getPrice(),paths,tradeBoardEntity.getBuyer());
 
         }
 

@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Qualifier
 public interface TwinkleService {
 
-    @GetMapping("/api/user/{username}")
-    ResponseEntity<MemberResponseDto> findByUsername(@PathVariable(value="username") String username);
+    @GetMapping("/user/{nickname}")
+    ResponseEntity<MemberResponseDto> findByNickname(@PathVariable(value="nickname") String nickname);
 
-    @GetMapping("/api/tradeboard/{id}")
+    @GetMapping("/tradeboard/{id}")
     ResponseEntity<TradeBoardResponseDto> TradeBoardPost(@PathVariable(value="id") Long id);
 
+    @GetMapping("/service/{username}")
+    ResponseEntity<MemberResponseDto> findByUsername(@PathVariable(value="username")String username);
 
 }

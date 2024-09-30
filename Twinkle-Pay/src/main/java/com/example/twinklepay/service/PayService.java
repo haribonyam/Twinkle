@@ -5,6 +5,7 @@ import com.example.twinklepay.domain.entity.PayEntity;
 import com.example.twinklepay.dto.request.PayRequestDto;
 import com.example.twinklepay.dto.response.PayResponseDto;
 import com.example.twinklepay.repository.PayRepository;
+import com.example.twinklepay.service.kafka.SoldOutProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class PayService {
 
     private final PayRepository payRepository;
+    private final SoldOutProducer soldOutProducer;
 
     @Transactional
     public PayResponseDto chargePayMoney(PayRequestDto payRequestDto){
@@ -59,20 +61,26 @@ public class PayService {
     public PayResponseDto tradePayMoney(PayRequestDto payRequestDto) {
         Optional<PayEntity> sellerEntity = payRepository.findByMemberId(payRequestDto.getSellerId());
         Optional<PayEntity> buyerEntity = payRepository.findByMemberId(payRequestDto.getMemberId());
+        PayEntity buyer = buyerEntity.get();
+
+        if(buyer.getPayMoney() < payRequestDto.getPayMoney()){
+            throw ErrorCode.throwNotEnoughMoney();
+        }
 
         if(!sellerEntity.isPresent()){
             payRepository.save(PayEntity.builder()
                     .memberId(payRequestDto.getSellerId())
                     .payMoney(payRequestDto.getPayMoney())
                     .build());
-            PayEntity buyer = buyerEntity.get();
             buyer.decreasePayMoney(payRequestDto.getPayMoney());
         }else{
-            PayEntity buyer = buyerEntity.get();
             PayEntity seller = sellerEntity.get();
             buyer.decreasePayMoney(payRequestDto.getPayMoney());
             seller.increasePayMoney(payRequestDto.getPayMoney());
         }
+        log.info("tradeBoardId : {}",payRequestDto.getTradeBoardId());
+        soldOutProducer.send("soldOut", payRequestDto.getTradeBoardId());
+
         return PayResponseDto.builder()
                 .payMoney(payRequestDto.getPayMoney())
                 .memberId(payRequestDto.getMemberId())

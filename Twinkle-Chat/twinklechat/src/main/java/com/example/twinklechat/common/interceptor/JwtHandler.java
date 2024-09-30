@@ -25,28 +25,28 @@ public class JwtHandler {
         this.secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 
-    public boolean isExpired(String accessToken){
+    public boolean isExpired(String accessToken) {
         String token = accessToken.split("Bearer ")[1];
-        log.info("jwt handler expired pro");
-       try {
-          return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
-       }catch(ExpiredJwtException e){
-           log.info("토큰 만료 {}",token);
-           ErrorCode.throwTokenIsExpired();
-           return false;
-       }
+        try {
+            // 만료 여부를 확인하고 만료된 경우 true를 반환
+            return Jwts.parser().verifyWith(secretKey).build()
+                    .parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            log.info("token is expired !!: {}", token);
+            return true;  // 만료된 경우 true 반환
+        } catch (Exception e) {
+            log.error("Internal Server Error: {}", e.getMessage());
+            return false;
+        }
     }
 
+
     public String getUserName(String accessToken){
-        log.info("jwt handler get user name pro");
         try {
             String token = accessToken.split("Bearer ")[1];
-            System.out.println(token);
             return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
         }catch(ExpiredJwtException e){
-            log.info("{}",e);
-            ErrorCode.throwUnauthorizedAccess();
-            return null;
+            throw ErrorCode.throwTokenIsExpired();
         }
     }
 

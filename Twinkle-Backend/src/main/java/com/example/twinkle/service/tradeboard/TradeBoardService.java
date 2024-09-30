@@ -9,18 +9,18 @@ import com.example.twinkle.dto.request.TradeBoardRequestDto;
 import com.example.twinkle.dto.response.TradeBoardResponseDto;
 import com.example.twinkle.repository.MemberRepository;
 import com.example.twinkle.repository.tradeboard.TradeBoardRepository;
+import com.example.twinkle.service.tradeboard.kafka.producer.DeleteTradeBoardProducer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +29,7 @@ public class TradeBoardService {
     private final TradeBoardRepository tradeBoardRepository;
     private final MemberRepository memberRepository;
     private final FileService fileSerivce;
+    private final DeleteTradeBoardProducer deleteTradeBoardProducer;
 
     /**
      * 중고거래 게시물 저장
@@ -70,11 +71,11 @@ public class TradeBoardService {
     }
     @Transactional
     public void deletePost(Long id) {
-        try {
-            tradeBoardRepository.deleteById(id);
-        }catch(EmptyResultDataAccessException e){
-            ErrorCode.throwPostNotFound();
-        }
+       TradeBoardEntity tradeBoard = tradeBoardRepository.findById(id).orElseThrow(ErrorCode::throwPostNotFound);
+
+       tradeBoardRepository.delete(tradeBoard);
+
+       deleteTradeBoardProducer.send("deletePost",id);
     }
 
     @Transactional
@@ -95,10 +96,22 @@ public class TradeBoardService {
      * @return
      */
     @Transactional
-    public Long requestTrade(Long tradeBoardId, Long buyerId) {
+    public void requestTrade(Long tradeBoardId, Long buyerId) {
         TradeBoardEntity tradeBoard =tradeBoardRepository.findById(tradeBoardId).orElseThrow(ErrorCode::throwPostNotFound);
-        tradeBoard.updateCondition(Condition.에약중);
-        tradeBoard.setBuyer(buyerId);
-        return tradeBoard.getId();
+
+        if(buyerId ==null){
+            tradeBoard.updateCondition(Condition.판매완료);
+        }else{
+            tradeBoard.updateCondition(Condition.예약중);
+            tradeBoard.setBuyer(buyerId);
+        }
+    }
+
+    @Transactional
+    public List<TradeBoardResponseDto> findAllByNickname(String nickname) {
+        List<TradeBoardEntity> entities = tradeBoardRepository.findAllByNicknameOrderByIdDesc(nickname).orElseThrow(ErrorCode::throwPostNotFound);
+        return entities.stream()
+                .map(TradeBoardResponseDto::toDto)
+                .collect(Collectors.toList());
     }
 }

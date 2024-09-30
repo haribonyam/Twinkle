@@ -54,9 +54,12 @@ public class ChatController {
      */
     @GetMapping("/room")
     public ResponseEntity<List<RoomResponseDto>> roomList(@RequestHeader("Authorization") String accessToken){
-
+        log.info("CHAT JWT : {}",accessToken);
         List<RoomResponseDto> rooms = chatService.findRoomList(accessToken);
-        if(rooms == null) return ResponseEntity.badRequest().body(null);
+        if(rooms == null){
+            log.info("data is null !!");
+            return ResponseEntity.badRequest().body(null);
+        }
 
         return ResponseEntity.ok(rooms);
     }
@@ -86,7 +89,7 @@ public class ChatController {
      * @param message
      * @return
      */
-    @PostMapping("/chat")
+    @PostMapping("/")
     public ResponseEntity<Message> saveChatting(@RequestBody Message message){
         log.info("chat save");
         chatService.saveChatting(message);
@@ -99,7 +102,7 @@ public class ChatController {
      * @param roomId
      * @return
      */
-    @GetMapping("/chat/{roomId}")
+    @GetMapping("/{roomId}")
     public ResponseEntity<RoomResponseDto> enterRoom(@RequestHeader("Authorization") String accessToken,@PathVariable("roomId") Long roomId){
         RoomResponseDto roomResponseDto = chatService.enterRoom(accessToken,roomId);
         return ResponseEntity.ok(roomResponseDto);

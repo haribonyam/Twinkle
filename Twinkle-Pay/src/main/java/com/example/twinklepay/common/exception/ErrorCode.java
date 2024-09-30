@@ -10,7 +10,8 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    PAY_MONEY_NOT_FOUND(NOT_FOUND,"페이머니가 존재하지 않습니다.","016");
+    PAY_MONEY_NOT_FOUND(NOT_FOUND,"페이머니가 존재하지 않습니다.","016"),
+    NOT_ENOUGH_MONEY(BAD_REQUEST,"페이머니가 부족합니다.","019");
 
 
     private final HttpStatus httpStatus;
@@ -21,4 +22,5 @@ public enum ErrorCode {
         throw new CustomException(PAY_MONEY_NOT_FOUND);
     }
 
+    public static CustomException throwNotEnoughMoney(){throw new CustomException(NOT_ENOUGH_MONEY);}
 }
